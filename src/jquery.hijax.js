@@ -2,7 +2,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.1
+ * @version: 0.3
  *
  * Licensed under the MIT License.
  */
@@ -16,6 +16,8 @@
 	var defaults = {
 			element: '#siteContent', // jQuery target string of element to replace content in.
 			exclude: '[data-hijax="false"]',
+			loadingClass: 'hijax-loading',
+			metaClass: 'hijax-meta',
 			whitelist: ['php','html','htm',''], // A list of extensions that will incur AJAX loading
 			
 			// Callbacks
@@ -34,7 +36,7 @@
 			init: function(){
 				// Check for history API support.
 				if ( !!(window.history && history.pushState) ){
-					$(document).on('click', 'a:not('+options.exclude+')', methods.linkClick); // Bind page links
+					$(document).on('click', 'a:not(['+settings.exclude+'])', methods.linkClick); // Bind page links
 					$(window).bind('popstate', methods.windowPop); // Bind the window forward & back buttons
 				}
 			},
@@ -46,7 +48,8 @@
 			 */
 			linkClick: function(event){
 				var
-					target = $(this).attr('target') || '',
+					target = $(this).attr('target') || false,
+					targetState = ( target === '_blank' || target === '_parent' || target === '_top' ) ? false : true,
 					href = $(this).attr('href'),
 					hrefArray = href.split('/'),
 					fname = ( hrefArray[hrefArray.length-1] !== '') ? hrefArray[hrefArray.length-1] : hrefArray[hrefArray.length-2],
@@ -58,7 +61,7 @@
 				if ( 	
 					href !== '#' && // No hash links (these are bad practice anyways)
 					( whitelistArray.indexOf(ext) > -1 ) && // Check our whitelist of allowed extensions
-					(target !== '_blank' || target !== '_parent' || target !== '_top') && // Check the target attribute
+					( targetState ) && // Check the target attribute
 					fname !== currentLocation // Make sure the link is actually different
 				){
 					event.preventDefault(); // Link checks out. Stop it from doing normal things.
@@ -76,6 +79,7 @@
 			 * @param  {[boolean]} pushHistory [Whether to push a new history entry. Useful for different events.]
 			 */
 			loadResource: function(url, pushHistory){
+				var $html = $('html');
 				var target = settings.element;
 				var request = $.ajax({
 					type: 'GET',
@@ -85,7 +89,7 @@
 						var xhr = new window.XMLHttpRequest();
 						xhr.addEventListener('progress', function(event){
 							if (event.lengthComputable){
-								var percent = event.loaded / event.total;
+								var percent = (event.loaded / event.total) * 100;
 								$(document).trigger({ type: 'hijax.progress', percent: percent});
 							}
 						}, false);
@@ -99,7 +103,10 @@
 				}
 
 				// Add a class for loading
-				$('html').addClass('hijax-loading');
+				$html.addClass(settings.loadingClass);
+
+				// Trigger Percent
+				$(document).trigger({ type: 'hijax.progress', percent: 0 });
 
 				// AJAX
 				request.done( function( responseText ){
@@ -118,7 +125,7 @@
 						settings.afterLoad();
 					}
 
-					$('html').removeClass('hijax-loading'); // We're done. Remove the class.
+					$html.removeClass(settings.loadingClass); // We're done. Remove the class.
 				});
 			},
 			/**
@@ -129,13 +136,23 @@
 			 */
 			changeMeta: function(){
 				var
-					pageTitle = $('#metaTitle').text(),
-					pageDescription = $('#metaDescription').text(),
-					pageClasses = $('#metaClasses').text();
+					$pageMeta = $('.'+settings.metaClass);
 
-				$('body').removeClass().addClass(pageClasses); // Change any page specific classes
-				$('head meta[name="description"]').attr('content', pageDescription); // Change head meta
-				document.title = pageTitle; // Change head title tag
+				$pageMeta.each(function(){
+					var
+						$meta = $(this),
+						metaTag = $meta.attr('data-tag'),
+						metaType = $meta.attr('data-type'),
+						metaTypeContent = $meta.attr( 'data-'+metaType ),
+						metaContent = $meta.attr('data-content');
+
+					if ( metaTag === 'title' ){
+						document.title = metaContent;
+					}
+					else {
+						$('head meta['+metaType+'="'+metaTypeContent+'"]').attr('content', metaContent);
+					}
+				});
 			},
 			/**
 			 * changeHistory
@@ -148,7 +165,7 @@
 			changeHistory: function(url, pushHistory){
 				var 
 					historyURL = (navigator.userAgent.match(/iPhone|iPad|iPod/i)) ? url+'#' : url, // Fix for iOS
-					pageTitle = $('#metaTitle').text(),
+					pageTitle = document.title,
 					ga = ga || undefined;
 
 				// Push a history entry
