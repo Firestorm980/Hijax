@@ -14,14 +14,15 @@
 
 	// Create the defaults once
 	var defaults = {
+			// Options
 			element: '#siteContent', // jQuery target string of element to replace content in.
-			exclude: '[data-hijax="false"]',
-			loadingClass: 'hijax-loading',
-			metaClass: 'hijax-meta',
-			whitelist: ['php','html','htm',''], // A list of extensions that will incur AJAX loading
+			exclude: '[data-hijax="false"]', // Optional class or data attribute that can be added to links so that they don't activate.
+			loadingClass: 'hijax-loading', // Class that is appeneded to HTML when loading.
+			metaClass: 'hijax-meta', // Class that the plugin will look for to find meta elements.
+			whitelist: ['php','html','htm',''], // A list of extensions that will incur AJAX loading.
 			
 			// Callbacks
-			beforeLoad: function(){}, // Before our AJAX loading. First thing to happen on load resource.
+			beforeLoad: function(){}, // Before our AJAX loading.
 			afterLoad: function(){}, // After our AJAX loading
 		};
 
