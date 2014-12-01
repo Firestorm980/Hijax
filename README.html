@@ -47,6 +47,14 @@
 <p>It&#39;s recommended that you also add in a CSS rule to hide these tags or that you contain them in a parent that is hidden.</p>
 <h1 id="options">Options</h1>
 <p>These are the options currently available for Hijax.</p>
+<pre><code class="lang-Javascript">$.Hijax({
+    element: &#39;#siteContent&#39;,
+    exclude: &#39;[data-hijax=&quot;false&quot;]&#39;,
+    loadingClass: &#39;hijax-loading&#39;,
+    metaClass: &#39;hijax-meta&#39;,
+    whitelist: [&#39;php&#39;,&#39;html&#39;,&#39;htm&#39;,&#39;&#39;]
+});
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -58,31 +66,31 @@
 </thead>
 <tbody>
 <tr>
-<td>element</td>
+<td><code>element</code></td>
 <td>string</td>
 <td>&#39;#siteContent&#39;</td>
 <td>String of the jQuery element to target</td>
 </tr>
 <tr>
-<td>exclude</td>
+<td><code>exclude</code></td>
 <td>string</td>
 <td>&#39;[data-hijax=&quot;false]&#39;</td>
 <td>String of the elements to exclude. Recommend a class or data attribute.</td>
 </tr>
 <tr>
-<td>loadingClass</td>
+<td><code>loadingClass</code></td>
 <td>string</td>
 <td>&#39;hijax-loading&#39;</td>
 <td>Class to toggle on HTML tag when loading takes place.</td>
 </tr>
 <tr>
-<td>metaClass</td>
+<td><code>metaClass</code></td>
 <td>string</td>
 <td>&#39;hijax-meta&#39;</td>
 <td>Class of the tag the plugin will look for to find meta data.</td>
 </tr>
 <tr>
-<td>whitelist</td>
+<td><code>whitelist</code></td>
 <td>array</td>
 <td>[&#39;php&#39;,&#39;html&#39;,&#39;htm&#39;,&#39;&#39;]</td>
 <td>An array of allowed file extensions for loading.</td>

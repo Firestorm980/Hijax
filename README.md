@@ -70,10 +70,20 @@ It's recommended that you also add in a CSS rule to hide these tags or that you 
 
 These are the options currently available for Hijax.
 
+```Javascript
+$.Hijax({
+    element: '#siteContent',
+    exclude: '[data-hijax="false"]',
+    loadingClass: 'hijax-loading',
+    metaClass: 'hijax-meta',
+    whitelist: ['php','html','htm','']
+});
+```
+
 | Option       | Type   | Default                 | Description                                                             |
 |--------------|--------|-------------------------|-------------------------------------------------------------------------|
-| element      | string | '#siteContent'          | String of the jQuery element to target                                  |
-| exclude      | string |  '[data-hijax="false]'  | String of the elements to exclude. Recommend a class or data attribute. |
-| loadingClass | string | 'hijax-loading'         | Class to toggle on HTML tag when loading takes place.                   |
-| metaClass    | string | 'hijax-meta'            | Class of the tag the plugin will look for to find meta data.            |
-| whitelist    | array  | ['php','html','htm',''] | An array of allowed file extensions for loading.                        |
+| `element`      | string | '#siteContent'          | String of the jQuery element to target                                  |
+| `exclude`      | string |  '[data-hijax="false]'  | String of the elements to exclude. Recommend a class or data attribute. |
+| `loadingClass` | string | 'hijax-loading'         | Class to toggle on HTML tag when loading takes place.                   |
+| `metaClass`    | string | 'hijax-meta'            | Class of the tag the plugin will look for to find meta data.            |
+| `whitelist`    | array  | ['php','html','htm',''] | An array of allowed file extensions for loading.                        |
