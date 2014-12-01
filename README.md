@@ -8,7 +8,7 @@ Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5
 
 The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect.
 
-### Use
+# Getting Started
 
 #### Installation
 
@@ -42,12 +42,12 @@ Hijax switches content on one page for content in another page from the same are
 <div id="footer"><!-- Footer navigation, copyrights, addresses, etc. --></div>
 ```
 
-When loading a new page, usually only the content within #content changes from page to page. This is the tag you would target for Hijax. The default ID Hijax will target is #siteContent and can be changed in the options when you call it.
+When loading a new page, usually only the content within #content changes from page to page. This is the tag you would target for Hijax. The default ID Hijax will target is #siteContent (this can be changed in the options).
 
 
 #### Page Meta Tags
 
-Hijax wants to make sure you can easily update your page meta tags to match the content that gets loaded in. For this, Hijax looks for a particular structure for meta information. Within your content that will be switched out, add in tags with the "hijax-meta" class. Hijax will search these and switch out any meta tags in your head after the page loads. An example of how to format them is below.
+Hijax wants to make sure you can easily update your page meta tags to match the content that gets loaded in. For this, Hijax looks for a particular structure for meta information. Within your content that will be switched out, add in tags with the "hijax-meta" class (you can also specify your own class in the options). Hijax will search these and switch out any meta tags in your head after the page loads. An example of how to format them is below.
 
 ```HTML
 <div id="content">
@@ -66,3 +66,14 @@ The meta tag for your page title is special and required. Hijax will look for th
 
 It's recommended that you also add in a CSS rule to hide these tags or that you contain them in a parent that is hidden.
 
+# Options
+
+These are the options currently available for Hijax.
+
+| Option       | Type   | Default                 | Description                                                             |
+|--------------|--------|-------------------------|-------------------------------------------------------------------------|
+| element      | string | '#siteContent'          | String of the jQuery element to target                                  |
+| exclude      | string |  '[data-hijax="false]'  | String of the elements to exclude. Recommend a class or data attribute. |
+| loadingClass | string | 'hijax-loading'         | Class to toggle on HTML tag when loading takes place.                   |
+| metaClass    | string | 'hijax-meta'            | Class of the tag the plugin will look for to find meta data.            |
+| whitelist    | array  | ['php','html','htm',''] | An array of allowed file extensions for loading.                        |

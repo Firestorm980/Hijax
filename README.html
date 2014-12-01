@@ -1,0 +1,91 @@
+<h1 id="jquery-hijax">jQuery Hijax</h1>
+<p>Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery&#39;s AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as <a href="https://github.com/cowboy/jquery-bbq">jQuery BBQ</a> and <a href="https://github.com/browserstate/history.js/">History.js</a>. The difference between those plugins and this are that:</p>
+<ul>
+<li>Hijax does not to alter the URL. No query strings, no hashtags or fragments. </li>
+<li>Hijax is progressive enhancement only. No backwards compatibility with browsers that don&#39;t support the History API.</li>
+</ul>
+<p>The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect.</p>
+<h1 id="getting-started">Getting Started</h1>
+<h4 id="installation">Installation</h4>
+<p>Load the Hijax script after you load jQuery on your pages and initiate it.</p>
+<pre><code class="lang-HTML">&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;/path-to-source/jquery.hijax.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+    jQuery(document).ready(function($) {
+        $.Hijax();
+    });
+&lt;/script&gt;
+</code></pre>
+<p>And that&#39;s all you need! While the basic use of the script is fairly simple, there are a lot of things that you may need to do to make sure it works as intended. The biggest of which are:</p>
+<ul>
+<li>Make sure the script loads on all of your pages.</li>
+<li>In your template for your pages, make sure there is a consistent area where you&#39;ll be switching out content.</li>
+</ul>
+<h4 id="html">HTML</h4>
+<p>Hijax switches content on one page for content in another page from the same area. So, your content on every page should be contained within the same content tag in the page structure. As an example, most sites follow a structure like this:</p>
+<pre><code class="lang-HTML">&lt;div id=&quot;header&quot;&gt;&lt;!-- Navigation, logo, search usually go in here somewhere --&gt;&lt;/div&gt;
+&lt;div id=&quot;content&quot;&gt;
+    &lt;!-- Here is where the actual page content that changes goes --&gt;
+&lt;/div&gt;
+&lt;div id=&quot;footer&quot;&gt;&lt;!-- Footer navigation, copyrights, addresses, etc. --&gt;&lt;/div&gt;
+</code></pre>
+<p>When loading a new page, usually only the content within #content changes from page to page. This is the tag you would target for Hijax. The default ID Hijax will target is #siteContent (this can be changed in the options).</p>
+<h4 id="page-meta-tags">Page Meta Tags</h4>
+<p>Hijax wants to make sure you can easily update your page meta tags to match the content that gets loaded in. For this, Hijax looks for a particular structure for meta information. Within your content that will be switched out, add in tags with the &quot;hijax-meta&quot; class (you can also specify your own class in the options). Hijax will search these and switch out any meta tags in your head after the page loads. An example of how to format them is below.</p>
+<pre><code class="lang-HTML">&lt;div id=&quot;content&quot;&gt;
+    &lt;!-- for the &lt;title&gt; tag, required --&gt;
+    &lt;span class=&quot;hijax-meta&quot; data-type=&quot;title&quot; data-content=&quot;Page Title&quot;&gt;&lt;/span&gt;
+    &lt;!-- for the &lt;meta name=&quot;description&quot; content=&quot;Page Description&quot; /&gt; tag --&gt;
+    &lt;span class=&quot;hijax-meta&quot; data-type=&quot;name&quot; data-name=&quot;description&quot; data-content=&quot;Page description&quot;&gt;&lt;/span&gt;
+    &lt;!-- for the &lt;meta property=&quot;og:title&quot; content=&quot;Page Title&quot; /&gt; tag --&gt;
+    &lt;span class=&quot;hijax-meta&quot; data-type=&quot;property&quot; data-property=&quot;og:title&quot; data-content=&quot;Page Title&quot;&gt;&lt;/span&gt;
+
+    &lt;!-- Here is where the actual page content that changes goes --&gt;
+&lt;/div&gt;
+</code></pre>
+<p>The meta tag for your page title is special and required. Hijax will look for this so it can update the document title. All other tags follow a similar pattern. Open Graph and other meta tags can be easily switched by following it.</p>
+<p>It&#39;s recommended that you also add in a CSS rule to hide these tags or that you contain them in a parent that is hidden.</p>
+<h1 id="options">Options</h1>
+<p>These are the options currently available for Hijax.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>element</td>
+<td>string</td>
+<td>&#39;#siteContent&#39;</td>
+<td>String of the jQuery element to target</td>
+</tr>
+<tr>
+<td>exclude</td>
+<td>string</td>
+<td>&#39;[data-hijax=&quot;false]&#39;</td>
+<td>String of the elements to exclude. Recommend a class or data attribute.</td>
+</tr>
+<tr>
+<td>loadingClass</td>
+<td>string</td>
+<td>&#39;hijax-loading&#39;</td>
+<td>Class to toggle on HTML tag when loading takes place.</td>
+</tr>
+<tr>
+<td>metaClass</td>
+<td>string</td>
+<td>&#39;hijax-meta&#39;</td>
+<td>Class of the tag the plugin will look for to find meta data.</td>
+</tr>
+<tr>
+<td>whitelist</td>
+<td>array</td>
+<td>[&#39;php&#39;,&#39;html&#39;,&#39;htm&#39;,&#39;&#39;]</td>
+<td>An array of allowed file extensions for loading.</td>
+</tr>
+</tbody>
+</table>
