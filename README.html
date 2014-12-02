@@ -69,7 +69,7 @@
 <td><code>element</code></td>
 <td>string</td>
 <td>&#39;#siteContent&#39;</td>
-<td>String of the jQuery element to target</td>
+<td>String of the jQuery element to target. Should be an ID.</td>
 </tr>
 <tr>
 <td><code>exclude</code></td>
@@ -95,5 +95,45 @@
 <td>[&#39;php&#39;,&#39;html&#39;,&#39;htm&#39;,&#39;&#39;]</td>
 <td>An array of allowed file extensions for loading.</td>
 </tr>
+<tr>
+<td><code>beforeLoad</code></td>
+<td>function</td>
+<td><code>function(){}</code></td>
+<td>Callback function that happens before AJAX loading.</td>
+</tr>
+<tr>
+<td><code>afterLoad</code></td>
+<td>function</td>
+<td><code>function(){}</code></td>
+<td>Callback function that happens after AJAX loading.</td>
+</tr>
 </tbody>
 </table>
+<h1 id="additional-information">Additional Information</h1>
+<h4 id="tested-on">Tested On</h4>
+<ul>
+<li>OSX (Chrome, Safari, Firefox)</li>
+<li>iOS (Safari)</li>
+<li>Android (Chrome)</li>
+</ul>
+<p>Note: iOS was tested in simulator.</p>
+<h4 id="roadmap">Roadmap</h4>
+<p>This is a list of possible improvements or features to include in future versions.</p>
+<ul>
+<li>Find a way to defer AJAX loading until after the &#39;beforeLoad&#39; callback has finished.</li>
+</ul>
+<h4 id="version-history">Version History</h4>
+<h5 id="0-4">0.4</h5>
+<p>Fixed Safari window pop bug.</p>
+<h5 id="0-3">0.3</h5>
+<p>Updated the way meta information is parsed and handled to make it more modular and standardized. Also fixed bugs with progress and exclusion list. Added some additional options.</p>
+<h5 id="0-2">0.2</h5>
+<p>Added comments to source.</p>
+<p>Fixed:</p>
+<ul>
+<li>Issue with pretty URLs not working properly.</li>
+<li>Google Analytics erroring out</li>
+<li>Content targeting not working.</li>
+</ul>
+<h5 id="0-1">0.1</h5>
+<p>Initial build.</p>

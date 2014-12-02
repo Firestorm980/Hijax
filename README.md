@@ -82,8 +82,49 @@ $.Hijax({
 
 | Option       | Type   | Default                 | Description                                                             |
 |--------------|--------|-------------------------|-------------------------------------------------------------------------|
-| `element`      | string | '#siteContent'          | String of the jQuery element to target                                  |
+| `element`      | string | '#siteContent'          | String of the jQuery element to target. Should be an ID.                |
 | `exclude`      | string |  '[data-hijax="false]'  | String of the elements to exclude. Recommend a class or data attribute. |
 | `loadingClass` | string | 'hijax-loading'         | Class to toggle on HTML tag when loading takes place.                   |
 | `metaClass`    | string | 'hijax-meta'            | Class of the tag the plugin will look for to find meta data.            |
 | `whitelist`    | array  | ['php','html','htm',''] | An array of allowed file extensions for loading.                        |
+| `beforeLoad`   | function | `function(){}`        | Callback function that happens before AJAX loading.                     |
+| `afterLoad`    | function | `function(){}`        | Callback function that happens after AJAX loading.                      |
+
+
+# Additional Information
+
+
+#### Tested On ####
+
+- OSX (Chrome, Safari, Firefox)
+- iOS (Safari)
+- Android (Chrome)
+
+Note: iOS was tested in simulator.
+
+#### Roadmap ####
+This is a list of possible improvements or features to include in future versions.
+- Find a way to defer AJAX loading until after the 'beforeLoad' callback has finished.
+
+
+#### Version History ####
+
+##### 0.4
+Fixed Safari window pop bug.
+
+##### 0.3
+
+Updated the way meta information is parsed and handled to make it more modular and standardized. Also fixed bugs with progress and exclusion list. Added some additional options.
+
+##### 0.2
+
+Added comments to source.
+
+Fixed:
+- Issue with pretty URLs not working properly.
+- Google Analytics erroring out
+- Content targeting not working.
+
+##### 0.1 
+
+Initial build.
