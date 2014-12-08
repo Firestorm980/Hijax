@@ -107,8 +107,32 @@
 <td><code>function(){}</code></td>
 <td>Callback function that happens after AJAX loading.</td>
 </tr>
+<tr>
+<td><code>sequenceIn</code></td>
+<td>function</td>
+<td><code>function(callback){ callback(); }</code></td>
+<td>Special function for adding your own animations. The callback is required.</td>
+</tr>
+<tr>
+<td><code>sequenceOut</code></td>
+<td>function</td>
+<td><code>function(callback){ callback(); }</code></td>
+<td>Special function for adding your own animations. The callback is required.</td>
+</tr>
 </tbody>
 </table>
+<h4 id="animating-pages-in-out">Animating Pages In / Out</h4>
+<p>There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:</p>
+<pre><code class="lang-Javascript">$.Hijax({
+    sequenceOut: function(callback){
+        $(&#39;#element&#39;).animate({ opacity: 0 }, { duration: 1000, complete: callback });    
+    },
+    sequenceIn: function(callback){
+        $(&#39;#element&#39;).animate({ opacity: 1 }, { duration: 1000, complete: callback });    
+    }
+});
+</code></pre>
+<p>The callback argument and the actual call of the callback is required for the function to work properly and for an actual page load to occur.</p>
 <h1 id="additional-information">Additional Information</h1>
 <h4 id="tested-on">Tested On</h4>
 <ul>
@@ -120,9 +144,11 @@
 <h4 id="roadmap">Roadmap</h4>
 <p>This is a list of possible improvements or features to include in future versions.</p>
 <ul>
-<li>Find a way to defer AJAX loading until after the &#39;beforeLoad&#39; callback has finished.</li>
+<li>[x] Find a way to defer AJAX loading until after the &#39;beforeLoad&#39; callback has finished.</li>
 </ul>
 <h4 id="version-history">Version History</h4>
+<h5 id="0-4-1">0.4.1</h5>
+<p>Added two special functions with callbacks so people can add advanced transitions to their page loading. Fixes the issue of stopping the AJAX load until someone is ready to have it happen. </p>
 <h5 id="0-4">0.4</h5>
 <p>Fixed Safari window pop bug.</p>
 <h5 id="0-3">0.3</h5>

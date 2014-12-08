@@ -2,7 +2,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.4
+ * @version: 0.4.1
  *
  * Licensed under the MIT License.
  */
@@ -14,29 +14,26 @@
 
 	// Create the defaults once
 	var defaults = {
-			// Options
-			element: '#hijax-content', // jQuery target string of element to replace content in.
-			exclude: '[data-hijax="false"]', // Optional class or data attribute that can be added to links so that they don't activate.
-			loadingClass: 'hijax-loading', // Class that is appeneded to HTML when loading.
-			metaClass: 'hijax-meta', // Class that the plugin will look for to find meta elements.
-			whitelist: ['php','html','htm',''], // A list of extensions that will incur AJAX loading.
-			
-			// Animation
-			animationTarget: '#hijax-content',
-			animationIn: { opacity: 1 },
-			animationInOptions: { duration: 300 },
-			animationOut: { opacity: 0 },
-			animationOutOptions: { duration: 300 },
+		// Options
+		element: '#hijax-content', // jQuery target string of element to replace content in.
+		exclude: '[data-hijax="false"]', // Optional class or data attribute that can be added to links so that they don't activate.
+		loadingClass: 'hijax-loading', // Class that is appeneded to HTML when loading.
+		metaClass: 'hijax-meta', // Class that the plugin will look for to find meta elements.
+		whitelist: ['php','html','htm',''], // A list of extensions that will incur AJAX loading.
+		
+		// Animation
+		sequenceOut: function(callback){ callback(); }, // Velocity sequence to use on a page load.
+		sequenceIn: function(callback){ callback(); }, // Velocity sequence to use when new page is done loading.
 
-			// Callbacks
-			beforeLoad: function(){}, // Before our AJAX loading.
-			afterLoad: function(){}, // After our AJAX loading
-		};
+		// Callbacks
+		beforeLoad: function(){}, // Before our AJAX loading.
+		afterLoad: function(){}, // Immediately after our AJAX loading.
+		loadComplete: function(){} // After all loading is done.
+	};
 
 	$.Hijax = function(options){
 		var settings = $.extend({}, defaults, options);
 		var initialLoad = true;
-		var velocitySupport = ( jQuery.Velocity !== undefined ) ? true : false;
 		var methods = {
 			/**
 			 * init
@@ -118,19 +115,16 @@
 						content = $(html).find(target).html();
 
 					$(target).html(content); // Change out content
-					
-					// Animate things
-					if ( !velocitySupport ){
-						$(target).find(settings.animationTarget).animate(settings.animationOut, { duration: 0 });
-					}
-					else {
-						$(target).find(settings.animationTarget).velocity(settings.animationOut, { duration: 0 });
+
+					// After load callback
+					if ( typeof settings.afterLoad === typeof Function){
+						settings.afterLoad();
 					}
 
 					methods.changeMeta( html ); // Update page meta
 					methods.changeHistory( url, pushHistory ); // Update history entry (if needed)
-					window.scrollTo(0,0); // Go to top of page
-				})
+					window.scrollTo(0,0); // Go to top of page.
+				});
 				request.complete( methods.loadComplete );
 			},
 			/**
@@ -142,8 +136,6 @@
 			 * @param  {[boolean]} pushHistory [Whether to push a new history entry. Useful for different events.]
 			 */
 			loadResource: function(url, pushHistory){
-				var animationOutOptions = settings.animationOutOptions;
-
 				// Not the initial load anymore.
 				initialLoad = false;
 				
@@ -152,18 +144,12 @@
 					settings.beforeLoad();
 				}
 
-				// Overwrite/add complete
-				animationOutOptions.complete = function animateOutCallback(){ 
-					$('html').addClass(settings.loadingClass); // Add a class for loading
-					methods.ajaxRequest(url, pushHistory); // Make the AJAX request
-				};
-
-				// Animate things
-				if ( !velocitySupport ){
-					$(settings.animationTarget).animate(settings.animationOut, animationOutOptions);
-				}
-				else {
-					$(settings.animationTarget).velocity(settings.animationOut, animationOutOptions);
+				// Add class to HTML
+				$('html').addClass(settings.loadingClass);
+				
+				// Sequence Out Callback
+				if ( typeof settings.sequenceOut === typeof Function){
+					settings.sequenceOut( function(){ methods.ajaxRequest(url, pushHistory); } );
 				}
 			},
 			/**
@@ -173,25 +159,19 @@
 			 * 
 			 */
 			loadComplete: function(){
-				var animationInOptions = settings.animationInOptions;
+				var 
+					completeCallback = function(){
+						// After load callback
+						if ( typeof settings.loadComplete === typeof Function){
+							settings.loadComplete();
+						}
+						// Add class to HTML
+						$('html').removeClass(settings.loadingClass);						
+					};
 
-				// After load callback
-				if ( typeof settings.afterLoad === typeof Function){
-					settings.afterLoad();
-				}
-
-				// Overwrite/add complete
-				animationInOptions.complete = function animateInCallback(){
-					$('html').removeClass(settings.loadingClass); // We're done. Remove the class.
-				};
-
-				// Animate things
-				if ( !velocitySupport ){
-					// Do the animateOut animation first. This 'resets' the animation so it can come in naturally.
-					$(settings.animationTarget).animate(settings.animationIn, animationInOptions);
-				}
-				else {
-					$(settings.animationTarget).velocity(settings.animationIn, animationInOptions);
+				// Sequence In Callback
+				if ( typeof settings.sequenceIn === typeof Function){
+					settings.sequenceIn( completeCallback );
 				}
 			},
 			/**

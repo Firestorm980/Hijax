@@ -67,7 +67,6 @@ The meta tag for your page title is special and required. Hijax will look for th
 It's recommended that you also add in a CSS rule to hide these tags or that you contain them in a parent that is hidden.
 
 # Options
-
 These are the options currently available for Hijax.
 
 ```Javascript
@@ -89,6 +88,24 @@ $.Hijax({
 | `whitelist`    | array  | ['php','html','htm',''] | An array of allowed file extensions for loading.                        |
 | `beforeLoad`   | function | `function(){}`        | Callback function that happens before AJAX loading.                     |
 | `afterLoad`    | function | `function(){}`        | Callback function that happens after AJAX loading.                      |
+| `sequenceIn`   | function | `function(callback){ callback(); }` | Special function for adding your own animations. The callback is required. |
+| `sequenceOut`   | function | `function(callback){ callback(); }` | Special function for adding your own animations. The callback is required. |
+
+#### Animating Pages In / Out
+There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:
+
+```Javascript
+$.Hijax({
+	sequenceOut: function(callback){
+		$('#element').animate({ opacity: 0 }, { duration: 1000, complete: callback });	
+	},
+	sequenceIn: function(callback){
+		$('#element').animate({ opacity: 1 }, { duration: 1000, complete: callback });	
+	}
+});
+```
+
+The callback argument and the actual call of the callback is required for the function to work properly and for an actual page load to occur.
 
 
 # Additional Information
@@ -104,10 +121,13 @@ Note: iOS was tested in simulator.
 
 #### Roadmap ####
 This is a list of possible improvements or features to include in future versions.
-- Find a way to defer AJAX loading until after the 'beforeLoad' callback has finished.
+- [x] Find a way to defer AJAX loading until after the 'beforeLoad' callback has finished.
 
 
 #### Version History ####
+
+##### 0.4.1
+Added two special functions with callbacks so people can add advanced transitions to their page loading. Fixes the issue of stopping the AJAX load until someone is ready to have it happen. 
 
 ##### 0.4
 Fixed Safari window pop bug.
