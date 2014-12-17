@@ -2,7 +2,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.4.1
+ * @version: 0.5
  *
  * Licensed under the MIT License.
  */
@@ -33,7 +33,13 @@
 
 	$.Hijax = function(options){
 		var settings = $.extend({}, defaults, options);
-		var initialLoad = true;
+		var popped = false;
+		var initialUrl = location.href;
+		var initialLoad;
+		var requestCount = 0;
+		var request;
+		var resourceLoading = false;
+		var currentLocation = initialUrl;
 		var methods = {
 			/**
 			 * init
@@ -44,7 +50,63 @@
 				// Check for history API support.
 				if ( !!(window.history && history.pushState) ){
 					$(document).on('click', 'a:not('+settings.exclude+')', methods.linkClick); // Bind page links
-					$(window).bind('popstate', methods.windowPop); // Bind the window forward & back buttons
+					$(window).on('popstate', methods.windowPop); // Bind the window forward & back buttons
+				}
+			},
+			/**
+			 * checkSamePage
+			 * -------------
+			 * Method for comparing to sets of URL strings.
+			 * 
+			 * @param  {[string]} currentUrl [URL string we're coming from]
+			 * @param  {[string]} targetUrl  [URL string we're trying to go to]
+			 * @return {[boolean]}            [True if it is the same page, false if not.]
+			 */
+			checkSamePage: function(currentUrl, targetUrl){
+				var
+					currArray = currentUrl.split('/'),
+					currPage = currArray[ currArray.length - 1 ],
+
+					targetArray = targetUrl.split('/'),
+					targetPage = targetArray[ targetArray.length - 1],
+
+					pathCheckLength = ( currArray.length > targetArray.length ) ? currArray.length : targetArray.length;
+					pathDifferenceIndex = -1;
+
+				// Loop through and compare both paths. Stop if you find a difference.
+				for (var i = 0, l = pathCheckLength; i < l; i++ ){
+					var currItem = currArray[i] || null;
+					var targetItem = targetArray[i] || null;
+					if ( currItem !== targetItem ){
+						pathDifferenceIndex = i;
+						break;
+					}
+				}
+
+				// Check if a path difference was found
+				if (pathDifferenceIndex > -1){
+					// Was the difference found in the last entry?
+					if ( pathDifferenceIndex === (pathCheckLength-1) ){
+						// Strip out hash tags to see if there really was a difference
+						var currString = ( currPage.indexOf('#') > -1 ) ? currPage.substring(0, currPage.indexOf('#')) : currPage;
+						var targetString = ( targetPage.indexOf('#') > -1 ) ? targetPage.substring(0, targetPage.indexOf('#')) : targetPage;
+
+						// Compare the remainder of the string
+						if ( currString === targetString){
+							return true; // Nope. Same query string or file.
+						}
+						else {
+							return false; // Yes. Different query or file.
+						}
+					}
+					// This for sure is a different thing, as it means the difference was spotted somewhere in the structure before the final slash
+					else {
+						return false; // Not same page
+					}
+				}
+				// Exact same path
+				else {
+					return true; // Is same page
 				}
 			},
 			/**
@@ -55,27 +117,38 @@
 			 */
 			linkClick: function(event){
 				var
+					location = window.location,
+
 					target = $(this).attr('target') || false,
 					targetState = ( target === '_blank' || target === '_parent' || target === '_top' ) ? false : true,
-					href = $(this).attr('href'),
-					hrefArray = href.split('/'),
-					fname = ( hrefArray[hrefArray.length-1] !== '') ? hrefArray[hrefArray.length-1] : hrefArray[hrefArray.length-2],
+					targetHref = $(this).attr('href'),
+					targetHash = $(this).prop('hash'),
+					targetArray = targetHref.split('/'),
+					fname = targetArray[targetArray.length-1],
 					ext = fname.substr((~-fname.lastIndexOf(".") >>> 0) + 2),
-					currentLocationArray = window.location.pathname.split('/'),
-					currentLocation = ( currentLocationArray[ currentLocationArray.length-1 ] !== '') ? currentLocationArray[ currentLocationArray.length-1 ] : currentLocationArray[ currentLocationArray.length-2 ],
-					whitelistArray = settings.whitelist;
 
-				if ( 	
-					href !== '#' && // No hash links (these are bad practice anyways)
-					( whitelistArray.indexOf(ext) > -1 ) && // Check our whitelist of allowed extensions
-					( targetState ) && // Check the target attribute
-					fname !== currentLocation // Make sure the link is actually different
-				){
-					event.preventDefault(); // Link checks out. Stop it from doing normal things.
-					methods.loadResource(href, true); // Load up that page!
-				} else if ( fname === currentLocation ){
-					event.preventDefault(); // We're on the same page. Do nothing.
+					whitelistArray = settings.whitelist,
+					samePage = methods.checkSamePage( location.href, targetHref );
+
+				// Is it the same page?
+				// Yes.
+				if ( samePage ){
+					event.preventDefault();
+					// Does it have a hash it wants us to go to? Yep.
+					if ( targetHash.length ){
+						window.scrollTo( 0, $(targetHash).offset().top ); // Scroll to the hash.
+						window.location.hash = targetHash; // Change the hash for history.
+					}
 				}
+				// Not the same page. Do additional checks.
+				else if (
+						( whitelistArray.indexOf(ext) > -1 ) && // Check our whitelist of allowed extensions
+						( targetState ) //&& // Check the target attribute
+					){
+					event.preventDefault(); // Link checks out. Stop it from doing normal things.
+					methods.loadResource(targetHref, true); // Load up that page!					
+				}
+
 			},
 			/**
 			 * ajaxRequest
@@ -86,8 +159,11 @@
 			 * @param  {[boolean]} pushHistory [Push a history entry or not]
 			 */
 			ajaxRequest: function(url, pushHistory){
+				requestCount++;
+				var requestnumber = requestCount; 
+				console.log(requestnumber);
 				// Our AJAX request
-				var request = $.ajax({
+				request = $.ajax({
 					type: 'GET',
 					url: url,
 					dataType: 'html',
@@ -107,6 +183,8 @@
 				// Trigger Percent
 				$(document).trigger({ type: 'hijax.progress', percent: 0 });
 
+				window.scrollTo(0,0); // Go to top of page.
+
 				// When we're done with AJAX
 				request.done( function( responseText ){
 					var 
@@ -114,18 +192,23 @@
 						html = jQuery.parseHTML( responseText ),
 						content = $(html).find(target).html();
 
-					$(target).html(content); // Change out content
+					console.log(requestCount);
 
-					// After load callback
-					if ( typeof settings.afterLoad === typeof Function){
-						settings.afterLoad();
+					if (requestnumber == requestCount){
+
+						$(target).html(content); // Change out content
+
+						// After load callback
+						if ( typeof settings.afterLoad === typeof Function){
+							settings.afterLoad();
+						}
+						methods.changeMeta( html ); // Update page meta
+						methods.changeHistory( url, pushHistory ); // Update history entry (if needed)
+
+						methods.loadComplete();
 					}
-
-					methods.changeMeta( html ); // Update page meta
-					methods.changeHistory( url, pushHistory ); // Update history entry (if needed)
-					window.scrollTo(0,0); // Go to top of page.
+					
 				});
-				request.complete( methods.loadComplete );
 			},
 			/**
 			 * loadResource
@@ -136,20 +219,30 @@
 			 * @param  {[boolean]} pushHistory [Whether to push a new history entry. Useful for different events.]
 			 */
 			loadResource: function(url, pushHistory){
-				// Not the initial load anymore.
-				initialLoad = false;
-				
-				// Before load callback
-				if ( typeof settings.beforeLoad === typeof Function){
-					settings.beforeLoad();
-				}
+				if ( !resourceLoading ) {
 
-				// Add class to HTML
-				$('html').addClass(settings.loadingClass);
-				
-				// Sequence Out Callback
-				if ( typeof settings.sequenceOut === typeof Function){
-					settings.sequenceOut( function(){ methods.ajaxRequest(url, pushHistory); } );
+					resourceLoading = true;
+
+					// Not the initial load anymore.
+					initialLoad = false;
+					
+					// Before load callback
+					if ( typeof settings.beforeLoad === typeof Function){
+						settings.beforeLoad();
+					}
+
+					// Add class to HTML
+					$('html').addClass(settings.loadingClass);
+					
+					// Sequence Out Callback
+					if ( typeof settings.sequenceOut === typeof Function){
+						settings.sequenceOut( function(){ methods.ajaxRequest(url, pushHistory); } );
+					}
+				}
+				else {
+					request.abort();
+					request = null;
+					methods.ajaxRequest( url, pushHistory );
 				}
 			},
 			/**
@@ -166,7 +259,10 @@
 							settings.loadComplete();
 						}
 						// Add class to HTML
-						$('html').removeClass(settings.loadingClass);						
+						$('html').removeClass(settings.loadingClass);
+
+						resourceLoading = false;
+						currentLocation = window.location.href;
 					};
 
 				// Sequence In Callback
@@ -229,6 +325,7 @@
 				// Push a new history entry
 				if (pushHistory){
 					history.pushState({ url: url }, pageTitle, historyURL);
+					popped = true;
 				}
 				// Google Analytics
 				if (ga !== undefined){
@@ -244,14 +341,30 @@
 			 * @param  {[object]} event [Event object that comes with the user interaction.]
 			 */
 			windowPop: function(event) {
+				// Catch for bad browsers
+				var initialPop = ( !popped && location.href == initialUrl );
+
+				popped = true; // We popped.
+
 				// Catches browsers which fire pop immediately.
-				if (event.originalEvent.state === null && initialLoad){
+				if ( initialPop ){
 					return;
 				}
 				else {
-					initialLoad = false; // Not the first load anymore
-					methods.loadResource(window.location, false); // Load that page! The pop itself modifies history, so no need to push.
+					var samePage = methods.checkSamePage( currentLocation, window.location.href);
+					var hash = window.location.hash;
+
+					// If this isn't the same page that we have in memory
+					if ( !samePage ){
+						initialLoad = false; // Not the first load anymore
+						methods.loadResource(window.location, false); // Load that page! The pop itself modifies history, so no need to push.
+					}
+					// It is the same page. Check for hash and move there.
+					else if ( hash.length ) {
+						window.scrollTo( 0, $(hash).offset().top ); // Scroll to the hash element.
+					}
 				}
+				
 			}
 		};
 

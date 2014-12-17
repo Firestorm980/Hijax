@@ -122,9 +122,14 @@ Note: iOS was tested in simulator.
 #### Roadmap ####
 This is a list of possible improvements or features to include in future versions.
 - [x] Find a way to defer AJAX loading until after the 'beforeLoad' callback has finished.
+- [ ] Continue to fix issues with back/forward button abuse.
+- [ ] Add smooth scrolling as an option.
 
 
 #### Version History ####
+
+##### 0.5
+Added in check to prevent abuse of the forward back buttons if pushed fast, added in a new function to compare URLs for better loading of pages, added support for hash URLs.
 
 ##### 0.4.1
 Added two special functions with callbacks so people can add advanced transitions to their page loading. Fixes the issue of stopping the AJAX load until someone is ready to have it happen. 
