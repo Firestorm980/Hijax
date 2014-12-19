@@ -20,11 +20,13 @@
 		loadingClass: 'hijax-loading', // Class that is appeneded to HTML when loading.
 		metaClass: 'hijax-meta', // Class that the plugin will look for to find meta elements.
 		whitelist: ['php','html','htm',''], // A list of extensions that will incur AJAX loading.
-		
-		// Animation
-		sequenceOut: function(callback){ callback(); }, // Velocity sequence to use on a page load.
-		sequenceIn: function(callback){ callback(); }, // Velocity sequence to use when new page is done loading.
+		smoothScroll: true, // Should we use built in smooth scrolling.
+		smoothScrollDuration: 750, // Duration of the scroll.
 
+		// Animation
+		sequenceOut: function(callback){ callback(); }, // A function specifically for custom animation before loading, but could be used for other functions as well. 
+		sequenceIn: function(callback){ callback(); }, // A function specifically for custom animation after loading, but could be used for other functions as well. 
+		
 		// Callbacks
 		beforeLoad: function(){}, // Before our AJAX loading.
 		afterLoad: function(){}, // Immediately after our AJAX loading.
@@ -37,7 +39,7 @@
 		var initialUrl = location.href;
 		var initialLoad;
 		var requestCount = 0;
-		var request;
+		var request = null;
 		var resourceLoading = false;
 		var currentLocation = initialUrl;
 		var methods = {
@@ -66,10 +68,8 @@
 				var
 					currArray = currentUrl.split('/'),
 					currPage = currArray[ currArray.length - 1 ],
-
 					targetArray = targetUrl.split('/'),
 					targetPage = targetArray[ targetArray.length - 1],
-
 					pathCheckLength = ( currArray.length > targetArray.length ) ? currArray.length : targetArray.length;
 					pathDifferenceIndex = -1;
 
@@ -133,11 +133,9 @@
 				// Is it the same page?
 				// Yes.
 				if ( samePage ){
-					event.preventDefault();
-					// Does it have a hash it wants us to go to? Yep.
-					if ( targetHash.length ){
-						window.scrollTo( 0, $(targetHash).offset().top ); // Scroll to the hash.
-						window.location.hash = targetHash; // Change the hash for history.
+					// Not going to a hash? Do nothing (don't reload the page);
+					if ( !targetHash.length ){
+						event.preventDefault();
 					}
 				}
 				// Not the same page. Do additional checks.
@@ -148,7 +146,6 @@
 					event.preventDefault(); // Link checks out. Stop it from doing normal things.
 					methods.loadResource(targetHref, true); // Load up that page!					
 				}
-
 			},
 			/**
 			 * ajaxRequest
@@ -160,8 +157,9 @@
 			 */
 			ajaxRequest: function(url, pushHistory){
 				requestCount++;
+
 				var requestnumber = requestCount; 
-				console.log(requestnumber);
+
 				// Our AJAX request
 				request = $.ajax({
 					type: 'GET',
@@ -183,7 +181,8 @@
 				// Trigger Percent
 				$(document).trigger({ type: 'hijax.progress', percent: 0 });
 
-				window.scrollTo(0,0); // Go to top of page.
+				// Scroll to the top of the page
+				methods.windowScroll(0);
 
 				// When we're done with AJAX
 				request.done( function( responseText ){
@@ -192,9 +191,7 @@
 						html = jQuery.parseHTML( responseText ),
 						content = $(html).find(target).html();
 
-					console.log(requestCount);
-
-					if (requestnumber == requestCount){
+					if (requestnumber == requestCount){ // Only proceed if the request number matches. If it doesn't, we're loading another page.
 
 						$(target).html(content); // Change out content
 
@@ -202,12 +199,11 @@
 						if ( typeof settings.afterLoad === typeof Function){
 							settings.afterLoad();
 						}
+
 						methods.changeMeta( html ); // Update page meta
 						methods.changeHistory( url, pushHistory ); // Update history entry (if needed)
-
-						methods.loadComplete();
+						methods.loadComplete(); // Proceed with finishing the load
 					}
-					
 				});
 			},
 			/**
@@ -219,9 +215,10 @@
 			 * @param  {[boolean]} pushHistory [Whether to push a new history entry. Useful for different events.]
 			 */
 			loadResource: function(url, pushHistory){
-				if ( !resourceLoading ) {
 
-					resourceLoading = true;
+				if ( !resourceLoading ) {
+					
+					resourceLoading = true; // Set resource loading flag so we don't get a bunch of callbacks.
 
 					// Not the initial load anymore.
 					initialLoad = false;
@@ -240,9 +237,10 @@
 					}
 				}
 				else {
-					request.abort();
-					request = null;
-					methods.ajaxRequest( url, pushHistory );
+					if ( request !== null ){ // There is a request in progress. Cancel this one.
+						request.abort();
+					}
+					methods.ajaxRequest( url, pushHistory ); // Start the new request.
 				}
 			},
 			/**
@@ -254,6 +252,8 @@
 			loadComplete: function(){
 				var 
 					completeCallback = function(){
+						var hash = window.location.hash;
+
 						// After load callback
 						if ( typeof settings.loadComplete === typeof Function){
 							settings.loadComplete();
@@ -261,8 +261,13 @@
 						// Add class to HTML
 						$('html').removeClass(settings.loadingClass);
 
-						resourceLoading = false;
-						currentLocation = window.location.href;
+						resourceLoading = false; // We're no longer loading and open for new full requests.
+						currentLocation = window.location.href; // Update our location for reference.
+
+						// if there is a hash, scroll us to it.
+						if ( hash.length ){
+							methods.windowScroll( $(hash).offset().top );
+						}
 					};
 
 				// Sequence In Callback
@@ -359,12 +364,23 @@
 						initialLoad = false; // Not the first load anymore
 						methods.loadResource(window.location, false); // Load that page! The pop itself modifies history, so no need to push.
 					}
-					// It is the same page. Check for hash and move there.
-					else if ( hash.length ) {
-						window.scrollTo( 0, $(hash).offset().top ); // Scroll to the hash element.
-					}
 				}
-				
+			},
+			/**
+			 * windowScroll
+			 * ------------
+			 * Function that handles our page scrolling for us. Animates if the user specifies, uses native jumping otherwise.
+			 * 
+			 * @param  {[number]} position [Number in pixels from top of page to scroll to.]
+			 */
+			windowScroll: function(position){
+				if ( settings.smoothScroll ){
+					$("html, body").animate({ scrollTop: position }, settings.smoothScrollDuration );
+					return false;
+				}
+				else {
+					window.scrollTo( 0, position );
+				}
 			}
 		};
 
@@ -381,7 +397,10 @@
 			 * @param  {[string]} url [The URL of the page to load.]
 			 */
 			load: function(url){
-				methods.loadResource(url, true);
+				var samePage = checkSamePage( currentLocation, url);
+				if ( typeof url === 'string' && !samePage){
+					methods.loadResource(url, true);
+				}
 			}
 		};
 	};

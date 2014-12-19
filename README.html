@@ -1,7 +1,7 @@
 <h1 id="jquery-hijax">jQuery Hijax</h1>
 <p>Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery&#39;s AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as <a href="https://github.com/cowboy/jquery-bbq">jQuery BBQ</a> and <a href="https://github.com/browserstate/history.js/">History.js</a>. The difference between those plugins and this are that:</p>
 <ul>
-<li>Hijax does not to alter the URL. No query strings, no hashtags or fragments. </li>
+<li>Hijax does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.</li>
 <li>Hijax is progressive enhancement only. No backwards compatibility with browsers that don&#39;t support the History API.</li>
 </ul>
 <p>The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect.</p>
@@ -47,14 +47,6 @@
 <p>It&#39;s recommended that you also add in a CSS rule to hide these tags or that you contain them in a parent that is hidden.</p>
 <h1 id="options">Options</h1>
 <p>These are the options currently available for Hijax.</p>
-<pre><code class="lang-Javascript">$.Hijax({
-    element: &#39;#siteContent&#39;,
-    exclude: &#39;[data-hijax=&quot;false&quot;]&#39;,
-    loadingClass: &#39;hijax-loading&#39;,
-    metaClass: &#39;hijax-meta&#39;,
-    whitelist: [&#39;php&#39;,&#39;html&#39;,&#39;htm&#39;,&#39;&#39;]
-});
-</code></pre>
 <table>
 <thead>
 <tr>
@@ -69,13 +61,13 @@
 <td><code>element</code></td>
 <td>string</td>
 <td>&#39;#siteContent&#39;</td>
-<td>String of the jQuery element to target. Should be an ID.</td>
+<td>jQuery selector of the element to target. Should be an ID.</td>
 </tr>
 <tr>
 <td><code>exclude</code></td>
 <td>string</td>
 <td>&#39;[data-hijax=&quot;false]&#39;</td>
-<td>String of the elements to exclude. Recommend a class or data attribute.</td>
+<td>jQuery selector of link elements to exclude. Recommend a class or data attribute.</td>
 </tr>
 <tr>
 <td><code>loadingClass</code></td>
@@ -105,7 +97,13 @@
 <td><code>afterLoad</code></td>
 <td>function</td>
 <td><code>function(){}</code></td>
-<td>Callback function that happens after AJAX loading.</td>
+<td>Callback function that happens immediately after AJAX loading.</td>
+</tr>
+<tr>
+<td><code>loadComplete</code></td>
+<td>function</td>
+<td><code>function(){}</code></td>
+<td>Callback function that happens when all loading has finished.</td>
 </tr>
 <tr>
 <td><code>sequenceIn</code></td>
@@ -119,8 +117,27 @@
 <td><code>function(callback){ callback(); }</code></td>
 <td>Special function for adding your own animations. The callback is required.</td>
 </tr>
+<tr>
+<td><code>smoothScroll</code></td>
+<td>boolean</td>
+<td>true</td>
+<td>Makes the window scroll animate when going in between pages. Also works for hashes.</td>
+</tr>
+<tr>
+<td><code>smoothScrollDuration</code></td>
+<td>number</td>
+<td>750</td>
+<td>Time in milliseconds that the scroll animation should take.</td>
+</tr>
 </tbody>
 </table>
+<p>You can use them like the example below: </p>
+<pre><code class="lang-Javascript">$.Hijax({
+    element: &#39;#my-element&#39;,
+    exclude: &#39;.link-exclude&#39;
+    ...
+});
+</code></pre>
 <h4 id="animating-pages-in-out">Animating Pages In / Out</h4>
 <p>There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:</p>
 <pre><code class="lang-Javascript">$.Hijax({
@@ -136,19 +153,22 @@
 <h1 id="additional-information">Additional Information</h1>
 <h4 id="tested-on">Tested On</h4>
 <ul>
-<li>OSX (Chrome, Safari, Firefox)</li>
-<li>iOS (Safari)</li>
-<li>Android (Chrome)</li>
+<li>OSX (Chrome 39, Safari 8, Firefox 34)</li>
+<li>iOS 8 (Safari)</li>
+<li>Android 4.1 (Chrome 39)</li>
 </ul>
 <p>Note: iOS was tested in simulator.</p>
 <h4 id="roadmap">Roadmap</h4>
 <p>This is a list of possible improvements or features to include in future versions.</p>
 <ul>
-<li>[x] Find a way to defer AJAX loading until after the &#39;beforeLoad&#39; callback has finished.</li>
+<li>[x] <del>Find a way to defer AJAX loading until after the &#39;beforeLoad&#39; callback has finished.</del></li>
 <li>[ ] Continue to fix issues with back/forward button abuse.</li>
-<li>[ ] Add smooth scrolling as an option.</li>
+<li>[x] <del>Add smooth scrolling as an option.</del></li>
+<li>[ ] Block buggy History API compatible browsers from using the plugin.</li>
 </ul>
 <h4 id="version-history">Version History</h4>
+<h5 id="0-5-1">0.5.1</h5>
+<p>Additional code for hash URLs, general code cleanup, additional check for public load method, added some smooth scrolling.</p>
 <h5 id="0-5">0.5</h5>
 <p>Added in check to prevent abuse of the forward back buttons if pushed fast, added in a new function to compare URLs for better loading of pages, added support for hash URLs.</p>
 <h5 id="0-4-1">0.4.1</h5>

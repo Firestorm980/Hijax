@@ -3,7 +3,7 @@ jQuery Hijax
 
 Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery's AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as [jQuery BBQ](https://github.com/cowboy/jquery-bbq) and [History.js](https://github.com/browserstate/history.js/). The difference between those plugins and this are that:
 
-- Hijax does not to alter the URL. No query strings, no hashtags or fragments. 
+- Hijax does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.
 - Hijax is progressive enhancement only. No backwards compatibility with browsers that don't support the History API.
 
 The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect.
@@ -69,27 +69,30 @@ It's recommended that you also add in a CSS rule to hide these tags or that you 
 # Options
 These are the options currently available for Hijax.
 
-```Javascript
-$.Hijax({
-    element: '#siteContent',
-    exclude: '[data-hijax="false"]',
-    loadingClass: 'hijax-loading',
-    metaClass: 'hijax-meta',
-    whitelist: ['php','html','htm','']
-});
-```
-
 | Option       | Type   | Default                 | Description                                                             |
 |--------------|--------|-------------------------|-------------------------------------------------------------------------|
-| `element`      | string | '#siteContent'          | String of the jQuery element to target. Should be an ID.                |
-| `exclude`      | string |  '[data-hijax="false]'  | String of the elements to exclude. Recommend a class or data attribute. |
+| `element`      | string | '#siteContent'          | jQuery selector of the element to target. Should be an ID.                |
+| `exclude`      | string |  '[data-hijax="false]'  | jQuery selector of link elements to exclude. Recommend a class or data attribute. |
 | `loadingClass` | string | 'hijax-loading'         | Class to toggle on HTML tag when loading takes place.                   |
 | `metaClass`    | string | 'hijax-meta'            | Class of the tag the plugin will look for to find meta data.            |
 | `whitelist`    | array  | ['php','html','htm',''] | An array of allowed file extensions for loading.                        |
 | `beforeLoad`   | function | `function(){}`        | Callback function that happens before AJAX loading.                     |
-| `afterLoad`    | function | `function(){}`        | Callback function that happens after AJAX loading.                      |
+| `afterLoad`    | function | `function(){}`        | Callback function that happens immediately after AJAX loading.          |
+| `loadComplete` | function | `function(){}`        | Callback function that happens when all loading has finished.           |
 | `sequenceIn`   | function | `function(callback){ callback(); }` | Special function for adding your own animations. The callback is required. |
 | `sequenceOut`   | function | `function(callback){ callback(); }` | Special function for adding your own animations. The callback is required. |
+| `smoothScroll` | boolean | true | Makes the window scroll animate when going in between pages. Also works for hashes. |
+| `smoothScrollDuration` | number | 750 | Time in milliseconds that the scroll animation should take. |
+
+You can use them like the example below: 
+
+```Javascript
+$.Hijax({
+    element: '#my-element',
+    exclude: '.link-exclude'
+    ...
+});
+```
 
 #### Animating Pages In / Out
 There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:
@@ -113,20 +116,24 @@ The callback argument and the actual call of the callback is required for the fu
 
 #### Tested On ####
 
-- OSX (Chrome, Safari, Firefox)
-- iOS (Safari)
-- Android (Chrome)
+- OSX (Chrome 39, Safari 8, Firefox 34)
+- iOS 8 (Safari)
+- Android 4.1 (Chrome 39)
 
 Note: iOS was tested in simulator.
 
 #### Roadmap ####
 This is a list of possible improvements or features to include in future versions.
-- [x] Find a way to defer AJAX loading until after the 'beforeLoad' callback has finished.
+- [x] ~~Find a way to defer AJAX loading until after the 'beforeLoad' callback has finished.~~
 - [ ] Continue to fix issues with back/forward button abuse.
-- [ ] Add smooth scrolling as an option.
+- [x] ~~Add smooth scrolling as an option.~~
+- [ ] Block buggy History API compatible browsers from using the plugin.
 
 
 #### Version History ####
+
+##### 0.5.1
+Additional code for hash URLs, general code cleanup, additional check for public load method, added some smooth scrolling.
 
 ##### 0.5
 Added in check to prevent abuse of the forward back buttons if pushed fast, added in a new function to compare URLs for better loading of pages, added support for hash URLs.
