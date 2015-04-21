@@ -24,7 +24,7 @@
 		smoothScrollDuration: 750, // Duration of the scroll.
 
 		// Animation
-		sequenceOut: function(callback){ callback(); }, // A function specifically for custom animation before loading, but could be used for other functions as well. 
+		sequenceOut: function(callback, target){ callback(); }, // A function specifically for custom animation before loading, but could be used for other functions as well. 
 		sequenceIn: function(callback){ callback(); }, // A function specifically for custom animation after loading, but could be used for other functions as well. 
 		
 		// Callbacks
@@ -42,6 +42,7 @@
 		var request = null;
 		var resourceLoading = false;
 		var currentLocation = initialUrl;
+		var eventTarget;
 		var methods = {
 			/**
 			 * init
@@ -144,7 +145,8 @@
 						( targetState ) //&& // Check the target attribute
 					){
 					event.preventDefault(); // Link checks out. Stop it from doing normal things.
-					methods.loadResource(targetHref, true); // Load up that page!					
+					eventTarget = event.target;
+					methods.loadResource(targetHref, true); // Load up that page!
 				}
 			},
 			/**
@@ -194,7 +196,6 @@
 					if (requestnumber == requestCount){ // Only proceed if the request number matches. If it doesn't, we're loading another page.
 
 						$(target).html(content); // Change out content
-
 						// After load callback
 						if ( typeof settings.afterLoad === typeof Function){
 							settings.afterLoad();
@@ -216,6 +217,8 @@
 			 */
 			loadResource: function(url, pushHistory){
 
+				var completeCallback = function(){ methods.ajaxRequest(url, pushHistory); };
+
 				if ( !resourceLoading ) {
 					
 					resourceLoading = true; // Set resource loading flag so we don't get a bunch of callbacks.
@@ -233,7 +236,7 @@
 					
 					// Sequence Out Callback
 					if ( typeof settings.sequenceOut === typeof Function){
-						settings.sequenceOut( function(){ methods.ajaxRequest(url, pushHistory); } );
+						settings.sequenceOut( completeCallback, eventTarget );
 					}
 				}
 				else {
@@ -362,6 +365,7 @@
 					// If this isn't the same page that we have in memory
 					if ( !samePage ){
 						initialLoad = false; // Not the first load anymore
+						eventTarget = event.target;
 						methods.loadResource(window.location, false); // Load that page! The pop itself modifies history, so no need to push.
 					}
 				}
@@ -399,6 +403,7 @@
 			load: function(url){
 				var samePage = checkSamePage( currentLocation, url);
 				if ( typeof url === 'string' && !samePage){
+					eventTarget = null;
 					methods.loadResource(url, true);
 				}
 			}
