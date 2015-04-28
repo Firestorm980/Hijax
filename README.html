@@ -12,7 +12,7 @@
 &lt;script src=&quot;/path-to-source/jquery.hijax.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
     jQuery(document).ready(function($) {
-        $.Hijax();
+        var Hijax = $.Hijax();
     });
 &lt;/script&gt;
 </code></pre>
@@ -132,7 +132,7 @@
 </tbody>
 </table>
 <p>You can use them like the example below: </p>
-<pre><code class="lang-Javascript">$.Hijax({
+<pre><code class="lang-Javascript">var Hijax = $.Hijax({
     element: &#39;#my-element&#39;,
     exclude: &#39;.link-exclude&#39;
     ...
@@ -140,7 +140,7 @@
 </code></pre>
 <h4 id="animating-pages-in-out">Animating Pages In / Out</h4>
 <p>There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:</p>
-<pre><code class="lang-Javascript">$.Hijax({
+<pre><code class="lang-Javascript">var Hijax = $.Hijax({
     sequenceOut: function(callback, eventElement, currentUrl, nextUrl){
         $(&#39;#element&#39;).animate({ opacity: 0 }, { duration: 1000, complete: callback });
     },

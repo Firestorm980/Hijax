@@ -19,7 +19,7 @@ Load the Hijax script after you load jQuery on your pages and initiate it.
 <script src="/path-to-source/jquery.hijax.js"></script>
 <script>
 	jQuery(document).ready(function($) {
-		$.Hijax();
+		var Hijax = $.Hijax();
 	});
 </script>
 ```
@@ -87,7 +87,7 @@ These are the options currently available for Hijax.
 You can use them like the example below: 
 
 ```Javascript
-$.Hijax({
+var Hijax = $.Hijax({
     element: '#my-element',
     exclude: '.link-exclude'
     ...
@@ -98,7 +98,7 @@ $.Hijax({
 There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:
 
 ```Javascript
-$.Hijax({
+var Hijax = $.Hijax({
 	sequenceOut: function(callback, eventElement, currentUrl, nextUrl){
 		$('#element').animate({ opacity: 0 }, { duration: 1000, complete: callback });
 	},
