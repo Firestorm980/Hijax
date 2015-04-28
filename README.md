@@ -79,8 +79,8 @@ These are the options currently available for Hijax.
 | `beforeLoad`   | function | `function(){}`        | Callback function that happens before AJAX loading.                     |
 | `afterLoad`    | function | `function(){}`        | Callback function that happens immediately after AJAX loading.          |
 | `loadComplete` | function | `function(){}`        | Callback function that happens when all loading has finished.           |
-| `sequenceIn`   | function | `function(callback){ callback(); }` | Special function for adding your own animations. The callback is required. |
-| `sequenceOut`   | function | `function(callback){ callback(); }` | Special function for adding your own animations. The callback is required. |
+| `sequenceIn`   | function | `function( callback, currentUrl, previousUrl ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
+| `sequenceOut`   | function | `function( callback, eventElement, currentUrl, nextUrl ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
 | `smoothScroll` | boolean | true | Makes the window scroll animate when going in between pages. Also works for hashes. |
 | `smoothScrollDuration` | number | 750 | Time in milliseconds that the scroll animation should take. |
 
@@ -99,16 +99,19 @@ There are two functions supplied for use that will allow a person to have multip
 
 ```Javascript
 $.Hijax({
-	sequenceOut: function(callback){
-		$('#element').animate({ opacity: 0 }, { duration: 1000, complete: callback });	
+	sequenceOut: function(callback, eventElement, currentUrl, nextUrl){
+		$('#element').animate({ opacity: 0 }, { duration: 1000, complete: callback });
 	},
-	sequenceIn: function(callback){
+	sequenceIn: function(callback, currentUrl, previousUrl){
 		$('#element').animate({ opacity: 1 }, { duration: 1000, complete: callback });	
 	}
 });
 ```
 
-The callback argument and the actual call of the callback is required for the function to work properly and for an actual page load to occur.
+The callback argument and the actual call of the callback are required for the function to work properly and for an actual page load to occur. All other arguments provide data for your use in the callback and are optional.
+- `eventElement`: Provides the document element that initiated the event. 
+- `currentUrl`: The URL that the user is on at the event. In `sequenceOut` this would be the URL of the page before the AJAX call. In `sequenceIn`, it is the URL that just loaded.
+- `nextUrl` / `previousUrl`: The destination URL (in case of `sequenceOut`) or the previous page URL (in case of `sequenceIn`).
 
 
 # Additional Information
@@ -131,6 +134,9 @@ This is a list of possible improvements or features to include in future version
 
 
 #### Version History ####
+
+##### 0.5.2
+Additional callback arguments for additional data. Some variable cleanup.
 
 ##### 0.5.1
 Additional code for hash URLs, general code cleanup, additional check for public load method, added some smooth scrolling.

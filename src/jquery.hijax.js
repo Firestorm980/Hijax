@@ -2,7 +2,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.5
+ * @version: 0.5.2
  *
  * Licensed under the MIT License.
  */
@@ -24,8 +24,8 @@
 		smoothScrollDuration: 750, // Duration of the scroll.
 
 		// Animation
-		sequenceOut: function(callback, target){ callback(); }, // A function specifically for custom animation before loading, but could be used for other functions as well. 
-		sequenceIn: function(callback){ callback(); }, // A function specifically for custom animation after loading, but could be used for other functions as well. 
+		sequenceOut: function(callback, eventElement, currentUrl, nextUrl ){ callback(); }, // A function specifically for custom animation before loading, but could be used for other functions as well. 
+		sequenceIn: function(callback, currentUrl, previousUrl){ callback(); }, // A function specifically for custom animation after loading, but could be used for other functions as well. 
 		
 		// Callbacks
 		beforeLoad: function(){}, // Before our AJAX loading.
@@ -41,8 +41,9 @@
 		var requestCount = 0;
 		var request = null;
 		var resourceLoading = false;
-		var currentLocation = initialUrl;
-		var eventTarget;
+		var currentUrl = initialUrl;
+		var eventElement = null;
+		var previousUrl = '';
 		var methods = {
 			/**
 			 * init
@@ -145,7 +146,7 @@
 						( targetState ) //&& // Check the target attribute
 					){
 					event.preventDefault(); // Link checks out. Stop it from doing normal things.
-					eventTarget = event.target;
+					eventElement = event.target;
 					methods.loadResource(targetHref, true); // Load up that page!
 				}
 			},
@@ -194,7 +195,7 @@
 						content = $(html).find(target).html();
 
 					if (requestnumber == requestCount){ // Only proceed if the request number matches. If it doesn't, we're loading another page.
-
+						
 						$(target).html(content); // Change out content
 						// After load callback
 						if ( typeof settings.afterLoad === typeof Function){
@@ -216,11 +217,13 @@
 			 * @param  {[boolean]} pushHistory [Whether to push a new history entry. Useful for different events.]
 			 */
 			loadResource: function(url, pushHistory){
-
 				var completeCallback = function(){ methods.ajaxRequest(url, pushHistory); };
 
 				if ( !resourceLoading ) {
-					
+
+					var nextUrl = url;
+					previousUrl = currentUrl; // Set previous URL.
+
 					resourceLoading = true; // Set resource loading flag so we don't get a bunch of callbacks.
 
 					// Not the initial load anymore.
@@ -236,7 +239,7 @@
 					
 					// Sequence Out Callback
 					if ( typeof settings.sequenceOut === typeof Function){
-						settings.sequenceOut( completeCallback, eventTarget );
+						settings.sequenceOut( completeCallback, eventElement, currentUrl, nextUrl );
 					}
 				}
 				else {
@@ -265,17 +268,18 @@
 						$('html').removeClass(settings.loadingClass);
 
 						resourceLoading = false; // We're no longer loading and open for new full requests.
-						currentLocation = window.location.href; // Update our location for reference.
 
 						// if there is a hash, scroll us to it.
 						if ( hash.length ){
 							methods.windowScroll( $(hash).offset().top );
 						}
 					};
+					
+				currentUrl = window.location.href; // Update our location for reference.
 
 				// Sequence In Callback
 				if ( typeof settings.sequenceIn === typeof Function){
-					settings.sequenceIn( completeCallback );
+					settings.sequenceIn( completeCallback, currentUrl, previousUrl );
 				}
 			},
 			/**
@@ -359,13 +363,13 @@
 					return;
 				}
 				else {
-					var samePage = methods.checkSamePage( currentLocation, window.location.href);
+					var samePage = methods.checkSamePage( currentUrl, window.location.href);
 					var hash = window.location.hash;
 
 					// If this isn't the same page that we have in memory
 					if ( !samePage ){
 						initialLoad = false; // Not the first load anymore
-						eventTarget = event.target;
+						eventElement = event.target;
 						methods.loadResource(window.location, false); // Load that page! The pop itself modifies history, so no need to push.
 					}
 				}
@@ -401,9 +405,9 @@
 			 * @param  {[string]} url [The URL of the page to load.]
 			 */
 			load: function(url){
-				var samePage = checkSamePage( currentLocation, url);
+				var samePage = methods.checkSamePage( currentUrl, url);
 				if ( typeof url === 'string' && !samePage){
-					eventTarget = null;
+					eventElement = null;
 					methods.loadResource(url, true);
 				}
 			}
