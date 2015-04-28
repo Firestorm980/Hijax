@@ -52,10 +52,38 @@
 			 */
 			init: function(){
 				// Check for history API support.
-				if ( !!(window.history && history.pushState) ){
+				if ( methods.checkHistorySupport() ){
 					$(document).on('click', 'a:not('+settings.exclude+')', methods.linkClick); // Bind page links
 					$(window).on('popstate', methods.windowPop); // Bind the window forward & back buttons
 				}
+			},
+			/**
+			 * checkHistorySupport
+			 * -------------------
+			 * Checks for browser history support and disallows bad browsers. 
+			 * This is pretty much directly from Modernizr's History support check. 
+			 * 
+			 * @source: https://github.com/Modernizr/Modernizr/blob/master/feature-detects/history.js
+			 * @return {boolean} True if supported, false if not.
+			 */
+			checkHistorySupport: function(){
+			    // The stock browser on Android 2.2 & 2.3, and 4.0.x returns positive on history support
+			    // Unfortunately support is really buggy and there is no clean way to detect
+			    // these bugs, so we fall back to a user agent sniff :(
+			    var ua = navigator.userAgent;
+
+			    // We only want Android 2 and 4.0, stock browser, and not Chrome which identifies
+			    // itself as 'Mobile Safari' as well, nor Windows Phone (issue #1471).
+			    if ((ua.indexOf('Android 2.') !== -1 ||
+			        (ua.indexOf('Android 4.0') !== -1)) &&
+			        ua.indexOf('Mobile Safari') !== -1 &&
+			        ua.indexOf('Chrome') === -1 &&
+			        ua.indexOf('Windows Phone') === -1) {
+			      return false;
+			    }
+
+			    // Return the regular check
+			    return (window.history && 'pushState' in window.history);
 			},
 			/**
 			 * checkSamePage
@@ -195,7 +223,7 @@
 						content = $(html).find(target).html();
 
 					if (requestnumber == requestCount){ // Only proceed if the request number matches. If it doesn't, we're loading another page.
-						
+
 						$(target).html(content); // Change out content
 						// After load callback
 						if ( typeof settings.afterLoad === typeof Function){
