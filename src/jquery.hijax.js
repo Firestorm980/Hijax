@@ -100,7 +100,7 @@
 					currPage = currArray[ currArray.length - 1 ],
 					targetArray = targetUrl.split('/'),
 					targetPage = targetArray[ targetArray.length - 1],
-					pathCheckLength = ( currArray.length > targetArray.length ) ? currArray.length : targetArray.length;
+					pathCheckLength = ( currArray.length > targetArray.length ) ? currArray.length : targetArray.length,
 					pathDifferenceIndex = -1;
 
 				// Loop through and compare both paths. Stop if you find a difference.
