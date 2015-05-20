@@ -135,6 +135,9 @@ This is a list of possible improvements or features to include in future version
 
 #### Version History ####
 
+##### 0.5.3
+Moved `beforeLoad` to a more appropriate spot. The order of events is now: `sequenceOut`, `beforeLoad`, `afterLoad`, `sequenceIn`, `loadComplete`.
+
 ##### 0.5.2
 Additional callback arguments for additional data. Some variable cleanup.
 

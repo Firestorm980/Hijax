@@ -2,7 +2,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.5.2
+ * @version: 0.5.3
  *
  * Licensed under the MIT License.
  */
@@ -174,7 +174,7 @@
 						( targetState ) //&& // Check the target attribute
 					){
 					event.preventDefault(); // Link checks out. Stop it from doing normal things.
-					eventElement = event.target;
+					eventElement = event.currentTarget;
 					methods.loadResource(targetHref, true); // Load up that page!
 				}
 			},
@@ -190,6 +190,11 @@
 				requestCount++;
 
 				var requestnumber = requestCount; 
+
+				// Before load callback
+				if ( typeof settings.beforeLoad === typeof Function){
+					settings.beforeLoad();
+				}
 
 				// Our AJAX request
 				request = $.ajax({
@@ -256,11 +261,6 @@
 
 					// Not the initial load anymore.
 					initialLoad = false;
-					
-					// Before load callback
-					if ( typeof settings.beforeLoad === typeof Function){
-						settings.beforeLoad();
-					}
 
 					// Add class to HTML
 					$('html').addClass(settings.loadingClass);
