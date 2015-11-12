@@ -44,28 +44,6 @@ Hijax switches content on one page for content in another page from the same are
 
 When loading a new page, usually only the content within #content changes from page to page. This is the tag you would target for Hijax. The default ID Hijax will target is #siteContent (this can be changed in the options).
 
-
-#### Page Meta Tags
-
-Hijax wants to make sure you can easily update your page meta tags to match the content that gets loaded in. For this, Hijax looks for a particular structure for meta information. Within your content that will be switched out, add in tags with the "hijax-meta" class (you can also specify your own class in the options). Hijax will search these and switch out any meta tags in your head after the page loads. An example of how to format them is below.
-
-```HTML
-<div id="content">
-	<!-- for the <title> tag, required -->
-	<span class="hijax-meta" data-type="title" data-content="Page Title"></span>
-	<!-- for the <meta name="description" content="Page Description" /> tag -->
-	<span class="hijax-meta" data-type="name" data-name="description" data-content="Page description"></span>
-	<!-- for the <meta property="og:title" content="Page Title" /> tag -->
-	<span class="hijax-meta" data-type="property" data-property="og:title" data-content="Page Title"></span>
-
-	<!-- Here is where the actual page content that changes goes -->
-</div>
-```
-
-The meta tag for your page title is special and required. Hijax will look for this so it can update the document title. All other tags follow a similar pattern. Open Graph and other meta tags can be easily switched by following it.
-
-It's recommended that you also add in a CSS rule to hide these tags or that you contain them in a parent that is hidden.
-
 # Options
 These are the options currently available for Hijax.
 
@@ -73,15 +51,9 @@ These are the options currently available for Hijax.
 |--------------|--------|-------------------------|-------------------------------------------------------------------------|
 | `element`      | string | '#siteContent'          | jQuery selector of the element to target. Should be an ID.                |
 | `exclude`      | string |  '[data-hijax="false]'  | jQuery selector of link elements to exclude. Recommend a class or data attribute. |
-| `loadingClass` | string | 'hijax-loading'         | Class to toggle on HTML tag when loading takes place.                   |
-| `metaClass`    | string | 'hijax-meta'            | Class of the tag the plugin will look for to find meta data.            |
-| `whitelist`    | array  | ['php','html','htm',''] | An array of allowed file extensions for loading.                        |
-| `beforeLoad`   | function | `function(){}`        | Callback function that happens before AJAX loading.                     |
-| `afterLoad`    | function | `function(){}`        | Callback function that happens immediately after AJAX loading.          |
-| `loadComplete` | function | `function(){}`        | Callback function that happens when all loading has finished.           |
-| `sequenceIn`   | function | `function( callback, currentUrl, previousUrl ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
-| `sequenceOut`   | function | `function( callback, eventElement, currentUrl, nextUrl ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
-| `smoothScroll` | boolean | true | Makes the window scroll animate when going in between pages. Also works for hashes. |
+| `sequenceIn`   | function | `function( callback, data ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
+| `sequenceOut`   | function | `function( callback, data ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
+| `smoothScroll` | boolean | false | Makes the window scroll animate when going in between pages. |
 | `smoothScrollDuration` | number | 750 | Time in milliseconds that the scroll animation should take. |
 
 You can use them like the example below: 
@@ -99,39 +71,42 @@ There are two functions supplied for use that will allow a person to have multip
 
 ```Javascript
 var Hijax = $.Hijax({
-	sequenceOut: function(callback, eventElement, currentUrl, nextUrl){
+	sequenceOut: function(callback, data){
 		$('#element').animate({ opacity: 0 }, { duration: 1000, complete: callback });
 	},
-	sequenceIn: function(callback, currentUrl, previousUrl){
+	sequenceIn: function(callback, data){
 		$('#element').animate({ opacity: 1 }, { duration: 1000, complete: callback });	
 	}
 });
 ```
 
-The callback argument and the actual call of the callback are required for the function to work properly and for an actual page load to occur. All other arguments provide data for your use in the callback and are optional.
-- `eventElement`: Provides the document element that initiated the event. 
-- `currentUrl`: The URL that the user is on at the event. In `sequenceOut` this would be the URL of the page before the AJAX call. In `sequenceIn`, it is the URL that just loaded.
-- `nextUrl` / `previousUrl`: The destination URL (in case of `sequenceOut`) or the previous page URL (in case of `sequenceIn`).
+The callback argument and the actual call of the callback are required for the function to work properly and for an actual page load to occur. The data argument has an object that will help you make decisions on what animation is appropriate. It contains:
+| `url`       | object | Lets you know either the previous/next URL and the current URL, depending on the sequence. |
+| `element`   | DOM element | The element that made the request happen. A link (`<a>`), the window (forward/back), or a manual request. (sequenceOut only) |
+| `direction` | string | Only happens on a `popstate` event (forward/back buttons are clicked). Lets you know which button was clicked. (sequenceOut only)| 
 
+#### Events
+Events have replaced the old loading callbacks. Those callbacks didn't pass any information and weren't used much in testing. In addition, all events are now namespaced to Hijax, which should make them easier to unbind, if needed.
+
+| Event        | Description   |
+|--------------|--------|
+| `beforeload.hijax`   | Happens just before AJAX call. |
+| `afterload.hijax`    | Happens when the AJAX call has successfully completed. |
+| `completeload.hijax` | Happens after the `sequenceIn` callback has completed. |
+| `progress.hijax`     | Happens while the AJAX call is occuring. Could be useful for a loading bar. |
 
 # Additional Information
 
 
 #### Tested On ####
 
+Tests for version 2 have not been completed, but it is assumed to work where Hijax used to:
+
 - OSX (Chrome 39, Safari 8, Firefox 34)
 - iOS 8 (Safari)
 - Android 4.1 (Chrome 39)
 
 Note: iOS was tested in simulator.
-
-#### Roadmap ####
-This is a list of possible improvements or features to include in future versions.
-- [x] ~~Find a way to defer AJAX loading until after the 'beforeLoad' callback has finished.~~
-- [ ] Continue to fix issues with back/forward button abuse.
-- [x] ~~Add smooth scrolling as an option.~~
-- [ ] Block buggy History API compatible browsers from using the plugin.
-
 
 #### Version History ####
 
