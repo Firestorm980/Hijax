@@ -19,6 +19,7 @@
             // Animate the body back to the top of the content
             smoothScroll: false,
             smoothScrollDuration: 1000,
+            smoothScrollContainer: '',
 
 
             // Animation in
@@ -72,6 +73,13 @@
                     return false;
                 }
 
+                instance._scroller = null;
+
+                if ( instance.settings.smoothScroll ){
+                    instance._check.scroller.call( instance );
+                }
+
+                
                 // Set default data
                 instance._data = {
                     // URL data
@@ -167,6 +175,35 @@
                 }
             },
             _check: {
+                scroller: function(){
+                    var 
+                        instance = this, 
+                        html = 0, 
+                        body = 0, 
+                        $container = jQuery(instance.settings.smoothScrollContainer);
+
+                    // Manual override for the scroll container.
+                    // Make sure it exists
+                    // If it does, set it as the scroll container.
+                    if ( $container.length ){
+                        instance._scroller = instance.settings.smoothScrollContainer;
+                    }
+                    else {
+                        // Set the scroll position
+                        // This will apply the scroll to any browser
+                        window.scrollTo(0, 1);
+                        // Get the position for both possibilities
+                        // Some browsers main scroll is on <html>, while others use <body>
+                        // Whichever one returns 1, is the the one we want
+                        html = document.documentElement.scrollTop; // Firefox, IE
+                        body = document.body.scrollTop; // Chrome, Safari, Opera
+                        // Test
+                        if ( html === 1 ){ instance._scroller = 'html'; }
+                        else if ( body === 1 ){ instance._scroller = 'body'; }
+                        // Reset
+                        window.scrollTo(0,0);                        
+                    }
+                },
                 supports: function(){
                     // The stock browser on Android 2.2 & 2.3, and 4.0.x returns positive on history support
                     // Unfortunately support is really buggy and there is no clean way to detect
@@ -383,22 +420,30 @@
                             element: instance._data.element
                         };
 
+                    // Save the direction we clicked if we did a popstate.
                     if ( instance._data.pop.state ){
                         data.direction = instance._data.pop.direction;
                     }
 
                     // If smoothscroll isn't enabled, snap back to the top
-                    if ( !instance.settings.smoothScroll ){
-                        window.scrollTo( 0, 0 );
+                    // Also do this if the event was a pop, since there is a bug with animations.
+                    if ( !instance.settings.smoothScroll || instance._data.pop.state ){
+                        jQuery(instance._scroller).scrollTop(0);
                         smoothScrollCallback(); // Do the callback above
                     }
                     // If it is enabled, animate us to the top
+                    // Only animate to the top if we aren't at the top already.
                     // Then do the callback above
-                    else {
-                        $('html,body').animate({ scrollTop: 0, scrollLeft: 0 }, { 
+                    else if ( instance.settings.smoothScroll && jQuery(instance._scroller).scrollTop() > 0 ) {
+                        jQuery(instance._scroller).stop(true,true).animate({ scrollTop: 0, scrollLeft: 0 }, { 
                             duration: instance.settings.smoothScrollDuration,
-                            complete: smoothScrollCallback 
+                            complete: smoothScrollCallback
                         });
+                    }
+                    // This is for if we're already at the top of the document. 
+                    // We just want to get rolling then.
+                    else {
+                        smoothScrollCallback();
                     }
                 },
                 load: function(){

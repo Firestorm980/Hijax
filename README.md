@@ -53,8 +53,9 @@ These are the options currently available for Hijax.
 | `exclude`      | string |  '[data-hijax="false]'  | jQuery selector of link elements to exclude. Recommend a class or data attribute. |
 | `sequenceIn`   | function | `function( callback, data ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
 | `sequenceOut`   | function | `function( callback, data ){ callback(); }` | Special function for adding your own animations. The callback argument and function call is required. |
-| `smoothScroll` | boolean | false | Makes the window scroll animate when going in between pages. |
+| `smoothScroll` | boolean | false | Makes the window/container animate scroll back to the top when going in between pages.* |
 | `smoothScrollDuration` | number | 750 | Time in milliseconds that the scroll animation should take. |
+| `smoothScrollContainer` | string | '' | A selector of the element to use for scrolling. Overrides the browser's default scrolling element (html or body, depending on browser). |
 
 You can use them like the example below: 
 
@@ -65,6 +66,8 @@ var Hijax = $.Hijax({
     ...
 });
 ```
+* Currently, `smoothScroll` only works for links in the document. It doesn't animate for `popstate` events. Instead, the plugin falls back to just snapping the window back to the top.
+
 
 #### Animating Pages In / Out
 There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:
