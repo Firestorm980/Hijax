@@ -81,6 +81,9 @@ var Hijax = $.Hijax({
 ```
 
 The callback argument and the actual call of the callback are required for the function to work properly and for an actual page load to occur. The data argument has an object that will help you make decisions on what animation is appropriate. It contains:
+
+| Key        | Type | Description   |
+|-------------|--------|---|
 | `url`       | object | Lets you know either the previous/next URL and the current URL, depending on the sequence. |
 | `element`   | DOM element | The element that made the request happen. A link (`<a>`), the window (forward/back), or a manual request. (sequenceOut only) |
 | `direction` | string | Only happens on a `popstate` event (forward/back buttons are clicked). Lets you know which button was clicked. (sequenceOut only)| 
