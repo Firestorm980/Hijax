@@ -56,6 +56,7 @@ These are the options currently available for Hijax.
 | `smoothScroll` | boolean | false | Makes the window/container animate scroll back to the top when going in between pages.* |
 | `smoothScrollDuration` | number | 750 | Time in milliseconds that the scroll animation should take. |
 | `smoothScrollContainer` | string | '' | A selector of the element to use for scrolling. Overrides the browser's default scrolling element (html or body, depending on browser). |
+| `scrollToTop` | boolean | Whether to scroll the window to the top or not on an event that would cause loading. This overrides `smoothScroll` if it is false. |
 
 You can use them like the example below: 
 

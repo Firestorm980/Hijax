@@ -70,13 +70,24 @@
 <td><code>smoothScroll</code></td>
 <td>boolean</td>
 <td>false</td>
-<td>Makes the window scroll animate when going in between pages.</td>
+<td>Makes the window/container animate scroll back to the top when going in between pages.*</td>
 </tr>
 <tr>
 <td><code>smoothScrollDuration</code></td>
 <td>number</td>
 <td>750</td>
 <td>Time in milliseconds that the scroll animation should take.</td>
+</tr>
+<tr>
+<td><code>smoothScrollContainer</code></td>
+<td>string</td>
+<td>&#39;&#39;</td>
+<td>A selector of the element to use for scrolling. Overrides the browser&#39;s default scrolling element (html or body, depending on browser).</td>
+</tr>
+<tr>
+<td><code>scrollToTop</code></td>
+<td>boolean</td>
+<td>Whether to scroll the window to the top or not on an event that would cause loading. This overrides <code>smoothScroll</code> if it is false.</td>
 </tr>
 </tbody>
 </table>
@@ -87,6 +98,9 @@
     ...
 });
 </code></pre>
+<ul>
+<li>Currently, <code>smoothScroll</code> only works for links in the document. It doesn&#39;t animate for <code>popstate</code> events. Instead, the plugin falls back to just snapping the window back to the top.</li>
+</ul>
 <h4 id="animating-pages-in-out">Animating Pages In / Out</h4>
 <p>There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:</p>
 <pre><code class="lang-Javascript">var Hijax = $.Hijax({
@@ -98,10 +112,33 @@
     }
 });
 </code></pre>
-<p>The callback argument and the actual call of the callback are required for the function to work properly and for an actual page load to occur. The data argument has an object that will help you make decisions on what animation is appropriate. It contains:
-| <code>url</code>       | object | Lets you know either the previous/next URL and the current URL, depending on the sequence. |
-| <code>element</code>   | DOM element | The element that made the request happen. A link (<code>&lt;a&gt;</code>), the window (forward/back), or a manual request. (sequenceOut only) |
-| <code>direction</code> | string | Only happens on a <code>popstate</code> event (forward/back buttons are clicked). Lets you know which button was clicked. (sequenceOut only)| </p>
+<p>The callback argument and the actual call of the callback are required for the function to work properly and for an actual page load to occur. The data argument has an object that will help you make decisions on what animation is appropriate. It contains:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>url</code></td>
+<td>object</td>
+<td>Lets you know either the previous/next URL and the current URL, depending on the sequence.</td>
+</tr>
+<tr>
+<td><code>element</code></td>
+<td>DOM element</td>
+<td>The element that made the request happen. A link (<code>&lt;a&gt;</code>), the window (forward/back), or a manual request. (sequenceOut only)</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td>string</td>
+<td>Only happens on a <code>popstate</code> event (forward/back buttons are clicked). Lets you know which button was clicked. (sequenceOut only)</td>
+</tr>
+</tbody>
+</table>
 <h4 id="events">Events</h4>
 <p>Events have replaced the old loading callbacks. Those callbacks didn&#39;t pass any information and weren&#39;t used much in testing. In addition, all events are now namespaced to Hijax, which should make them easier to unbind, if needed.</p>
 <table>

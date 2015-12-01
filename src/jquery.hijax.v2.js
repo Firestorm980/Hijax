@@ -16,11 +16,15 @@
             // Could be an attribute, class, or other selector
             exclude: '[data-hijax="false"]',
 
+            // Whether to scroll to the top of the window on an event.
+            // Overrides smoothScroll if false
+            // Could be useful if you wanted to control a similar smooth scroll animation with another library
+            scrollToTop: false,
+
             // Animate the body back to the top of the content
             smoothScroll: false,
             smoothScrollDuration: 1000,
             smoothScrollContainer: '',
-
 
             // Animation in
             sequenceIn: function( callback, data ){
@@ -34,7 +38,6 @@
                 console.log(data.url.target + ' | ' + data.url.current );
                 callback();
             },
-
         };
 
     // The actual plugin constructor
@@ -100,7 +103,7 @@
                     // Direction is what button they clicked, forward or back. Set by comparing IDs.
                     pop: {
                         state: false,
-                        id: history.state.id || 0,
+                        id: ( history.state !== null ) ? history.state.id : 0, 
                         direction: ''
                     },
                     // What element called the event
@@ -425,22 +428,24 @@
                         data.direction = instance._data.pop.direction;
                     }
 
+
                     // If smoothscroll isn't enabled, snap back to the top
                     // Also do this if the event was a pop, since there is a bug with animations.
-                    if ( !instance.settings.smoothScroll || instance._data.pop.state ){
+                    if ( !instance.settings.smoothScroll && instance.settings.scrollToTop || instance._data.pop.state && instance.settings.scrollToTop ){
                         jQuery(instance._scroller).scrollTop(0);
                         smoothScrollCallback(); // Do the callback above
                     }
                     // If it is enabled, animate us to the top
                     // Only animate to the top if we aren't at the top already.
                     // Then do the callback above
-                    else if ( instance.settings.smoothScroll && jQuery(instance._scroller).scrollTop() > 0 ) {
+                    else if ( instance.settings.smoothScroll && jQuery(instance._scroller).scrollTop() > 0 && instance.settings.scrollToTop ) {
                         jQuery(instance._scroller).stop(true,true).animate({ scrollTop: 0, scrollLeft: 0 }, { 
                             duration: instance.settings.smoothScrollDuration,
                             complete: smoothScrollCallback
                         });
                     }
-                    // This is for if we're already at the top of the document. 
+                    // This is for if we're already at the top of the document.
+                    // Or we don't want scrolling to the top
                     // We just want to get rolling then.
                     else {
                         smoothScrollCallback();
