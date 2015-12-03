@@ -108,7 +108,7 @@ Events have replaced the old loading callbacks. Those callbacks didn't pass any 
 There are a couple methods for use with Hijax that should help you out in very specific circumstances.
 
 | Method | Example | Description | 
-|--------|-------------|
+|--------|-------------|---------|
 | `response` | `jQuery(document).hijax('response')` | Returns the last response from the AJAX call that Hijax used. This should be the source code of the last page loaded, if the call succeeded. Useful if you need to extract more data out of it (such as classes, meta information, etc.) that is outside of the content area. |
 | `load` | `jQuery(document).hijax('load', 'someurl')` | Manually load a page. You must supply a URL string as an argument. If you specify a URL that is external, it is simply a convenience function for `window.location.href`. The page will not load if it is the same as the current one. |
 
