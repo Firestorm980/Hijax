@@ -4,15 +4,17 @@
 <li>Hijax does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.</li>
 <li>Hijax is progressive enhancement only. No backwards compatibility with browsers that don&#39;t support the History API.</li>
 </ul>
-<p>The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect.</p>
+<p>The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect. It also provides easy access to animating between those states.</p>
 <h1 id="getting-started">Getting Started</h1>
 <h4 id="installation">Installation</h4>
 <p>Load the Hijax script after you load jQuery on your pages and initiate it.</p>
 <pre><code class="lang-HTML">&lt;script src=&quot;//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;/path-to-source/jquery.hijax.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;/path-to-source/jquery.hijax.min.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
     jQuery(document).ready(function($) {
-        var Hijax = $.Hijax();
+
+        jQuery(document).hijax();
+
     });
 &lt;/script&gt;
 </code></pre>
@@ -87,6 +89,7 @@
 <tr>
 <td><code>scrollToTop</code></td>
 <td>boolean</td>
+<td>false</td>
 <td>Whether to scroll the window to the top or not on an event that would cause loading. This overrides <code>smoothScroll</code> if it is false.</td>
 </tr>
 </tbody>
@@ -102,7 +105,7 @@
 <li>Currently, <code>smoothScroll</code> only works for links in the document. It doesn&#39;t animate for <code>popstate</code> events. Instead, the plugin falls back to just snapping the window back to the top.</li>
 </ul>
 <h4 id="animating-pages-in-out">Animating Pages In / Out</h4>
-<p>There are two functions supplied for use that will allow a person to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that people can add their own custom animations to have smooth transitions between pages. An example of this is below:</p>
+<p>By default, these functions simply proceed to the next phase of loading. However, they are supplied for use that will allow a developer to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that you can add your own custom animations to have smooth transitions between pages (but it could be used/abused for other purposes). An example of this is below:</p>
 <pre><code class="lang-Javascript">var Hijax = $.Hijax({
     sequenceOut: function(callback, data){
         $(&#39;#element&#39;).animate({ opacity: 0 }, { duration: 1000, complete: callback });
@@ -112,7 +115,7 @@
     }
 });
 </code></pre>
-<p>The callback argument and the actual call of the callback are required for the function to work properly and for an actual page load to occur. The data argument has an object that will help you make decisions on what animation is appropriate. It contains:</p>
+<p>The callback argument and the actual call of the callback are required for the functions to work properly and for an actual page load to occur. The data argument has an object that can help you make decisions on what animation is appropriate. It contains:</p>
 <table>
 <thead>
 <tr>
@@ -130,7 +133,7 @@
 <tr>
 <td><code>element</code></td>
 <td>DOM element</td>
-<td>The element that made the request happen. A link (<code>&lt;a&gt;</code>), the window (forward/back), or a manual request. (sequenceOut only)</td>
+<td>The element that made the request happen. A link (<code>&lt;a&gt;</code>) or the <code>window</code> (for forward/back). Manual <code>load</code> requests are shown as coming from <code>window</code>. (sequenceOut only)</td>
 </tr>
 <tr>
 <td><code>direction</code></td>
@@ -163,11 +166,44 @@
 </tr>
 <tr>
 <td><code>progress.hijax</code></td>
-<td>Happens while the AJAX call is occuring. Could be useful for a loading bar.</td>
+<td>Happens while the AJAX call is occuring. Useful for a possible loading bar.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods">Methods</h4>
+<p>There are a couple methods for use with Hijax that should help you out in very specific circumstances.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>response</code></td>
+<td><code>jQuery(document).hijax(&#39;response&#39;)</code></td>
+<td>Returns the last response from the AJAX call that Hijax used. This should be the source code of the last page loaded, if the call succeeded. Useful if you need to extract more data out of it (such as classes, meta information, etc.) that is outside of the content area.</td>
+</tr>
+<tr>
+<td><code>load</code></td>
+<td><code>jQuery(document).hijax(&#39;load&#39;, &#39;someurl&#39;)</code></td>
+<td>Manually load a page. You must supply a URL string as an argument. If you specify a URL that is external, it is simply a convenience function for <code>window.location.href</code>. The page will not load if it is the same as the current one.</td>
 </tr>
 </tbody>
 </table>
 <h1 id="additional-information">Additional Information</h1>
+<h4 id="behavior-with-links">Behavior with Links</h4>
+<p>Hijax is meant to take over links in your page by default. It targets all the links except those specified in the <code>exclude</code> option. However, Hijax will also automatically ignore certain links if:</p>
+<ul>
+<li>It has a hashtag for the current page (in which case the browser should do its default behavior)</li>
+<li>It has a <code>target</code> attribute that points to: &quot;_blank&quot;, &quot;_parent&quot;, or &quot;_top&quot;</li>
+<li>It has a <code>download</code> attribute (Part of HTML5 spec. The browser should prompt for download - if supported.)</li>
+<li>It is an external link (By comparing the host/domain of the current URL and the target, should do default behavior)</li>
+<li>It is determined to be the same as the current page (in which case loading is redundant)</li>
+</ul>
+<p>This should get rid of most undesired behavior with links and UX.</p>
 <h4 id="tested-on">Tested On</h4>
 <p>Tests for version 2 have not been completed, but it is assumed to work where Hijax used to:</p>
 <ul>
@@ -177,6 +213,22 @@
 </ul>
 <p>Note: iOS was tested in simulator.</p>
 <h4 id="version-history">Version History</h4>
+<h5 id="0-6-0">0.6.0</h5>
+<p>A complete refactor of the plugin has been made to better organize, improve performance and make future updates easier. There are some additional checks, methods, and options.</p>
+<ul>
+<li>Added <code>response</code> method</li>
+<li>Changed loading callbacks to events</li>
+<li>Namespaced events</li>
+<li>Added additional data to callbacks</li>
+<li>Fixed popstate events (for the most part)</li>
+<li>Removed <code>whitelist</code> option. Devs should instead use the <code>exclude</code> option and more semantic attributes with <code>target</code> and <code>download</code></li>
+<li>Simplification of <code>sequenceIn</code> and <code>sequenceOut</code></li>
+<li>Added <code>smoothScrollContainer</code> option</li>
+<li>Removed meta tag loading (you can do this in an event callback or a time of your choosing with the <code>response</code> method)</li>
+<li>Removed loading class (you can add/remove one with the event callbacks)</li>
+<li>Additional page and domain checking for similarities</li>
+</ul>
+<hr>
 <h5 id="0-5-3">0.5.3</h5>
 <p>Moved <code>beforeLoad</code> to a more appropriate spot. The order of events is now: <code>sequenceOut</code>, <code>beforeLoad</code>, <code>afterLoad</code>, <code>sequenceIn</code>, <code>loadComplete</code>.</p>
 <h5 id="0-5-2">0.5.2</h5>

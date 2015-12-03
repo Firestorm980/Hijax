@@ -1,4 +1,16 @@
-(function (factory) {
+/**
+ * jQuery Hijax Plugin
+ * @author: Jon Christensen (Firestorm980)
+ * @github: https://github.com/Firestorm980/Hijax
+ * @version: 0.6.0
+ *
+ * Licensed under the MIT License.
+ */
+
+// the semi-colon before the function invocation is a safety
+// net against concatenated scripts and/or other plugins
+// that are not closed properly.
+;(function (factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
@@ -28,14 +40,10 @@
 
             // Animation in
             sequenceIn: function( callback, data ){
-                console.log('in');
-                console.log(data.url.current + ' | ' + data.url.previous );
                 callback();
             },
             // Animation out
             sequenceOut: function( callback, data ){
-                console.log('out');
-                console.log(data.url.target + ' | ' + data.url.current );
                 callback();
             },
         };
@@ -270,6 +278,12 @@
                         return true; // Is same page
                     }
                 },
+                domain: function( url ){
+                    var parser = document.createElement('a');
+                    parser.href = url;
+
+                    return ( parser.host === location.host );
+                }
             },
             _event: {
                 load: function(){
@@ -302,10 +316,15 @@
                         target_target = $elem.attr('target'),
                         target_state = ( target_target === '_blank' || target_target === '_parent' || target_target === '_top' ) ? false : true,
                         current_url = instance._data.url.current,
-                        is_same_page = instance._check.page.call( this, current_url, target_url );
+                        is_same_page = instance._check.page.call( this, current_url, target_url ),
+                        is_same_domain = instance._check.domain.call( this, target_url );
 
+                    // External link
+                    if ( !is_same_domain ){
+                        return;
+                    }
                     // The request is for the current page
-                    if ( is_same_page ){
+                    else if ( is_same_page ){
                         // There isn't a hash ("someplace.com/#target") in the request?
                         // Don't do anything then
                         if ( !target_hash.length ){
@@ -313,7 +332,8 @@
                         }
                         // There is a hash
                         else {
-                            // @todo: Animation? Callback?
+                           return;
+                           // @todo: add animation? callback?
                         }
                     }
                     // The anchor is not a download link nor is it pointing to another frame
@@ -463,10 +483,10 @@
                     if ( instance._data.ajax.target === null ){
                         return;
                     }
+                    // Do the beforeload event
+                    $(instance.element).trigger({ type: 'beforeload.hijax' });
                     // Trigger Percent
                     $(instance.element).trigger({ type: 'progress.hijax', percent: 0 });
-                    // Do the beforeload event
-                    $(instance.element).trigger('beforeload.hijax');
                     // Save the request for use later
                     // Things like aborting can be done then
                     instance._data.ajax.request = jQuery.ajax({
@@ -491,9 +511,9 @@
                         instance._data.ajax.response = response;
                         instance._data.ajax.success = true;
                         // Do afterload event
-                        $(instance.element).trigger('afterload.hijax');
+                        $(instance.element).trigger({ type: 'afterload.hijax', response: response });
                         // Proceed to do the end load
-                        instance._history.end_load.call( instance );
+                        instance._history.end_load.call( instance ); 
                     })
                     .fail(function() {
                         instance._data.ajax.success = false;
@@ -508,7 +528,7 @@
                             // Open up loading for another page
                             instance._data.ajax.loading = false;
                             // Do the completeload event
-                            $(instance.element).trigger('completeload.hijax');
+                            $(instance.element).trigger({ type: 'completeload.hijax' });
                         },
                         data = null;
 
@@ -599,12 +619,6 @@
          * ==============
          */
         
-
-            data: function(){
-                var instance = this;
-                return instance._data;
-            },
-
             response: function(){
                 var instance = this;
                 return instance._data.ajax.response;
@@ -614,11 +628,15 @@
                 var 
                     instance = this,
                     current_url = instance._data.url.current,
-                    is_same_page = instance._check.page( current_url, target_url );
+                    is_same_page = instance._check.page( current_url, target_url ),
+                    is_same_domain = instance._check.domain.call( this, target_url );
 
-                if ( typeof url === 'string' && !is_same_page ){
+                if ( typeof target_url === 'string' && !is_same_page && is_same_domain ){
                     instance._data.url.target = target_url;
                     instance._eventSwitch.call( instance, 'manual' );
+                }
+                else if ( !is_same_domain ){
+                    window.location.href = target_url;
                 }
             }
     });
