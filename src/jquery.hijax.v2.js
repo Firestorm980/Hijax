@@ -1,8 +1,20 @@
+(function ($, root, undefined) {
+    
+    $(function () {
+        
+        'use strict';
+        
+        // DOM ready, take it away
+        
+    });
+    
+})(jQuery, this);
+
 /**
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.6.0
+ * @version: 0.6.1
  *
  * Licensed under the MIT License.
  */
@@ -32,6 +44,8 @@
             // Overrides smoothScroll if false
             // Could be useful if you wanted to control a similar smooth scroll animation with another library
             scrollToTop: false,
+
+            scrollToHash: false,
 
             // Animate the body back to the top of the content
             smoothScroll: false,
@@ -237,8 +251,12 @@
                     var
                         current_url_array = current_url.split('/'),
                         current_url_page = current_url_array[ current_url_array.length - 1 ],
+                        current_url_string = '',
+
                         target_url_array = target_url.split('/'),
                         target_url_page = target_url_array[ target_url_array.length - 1],
+                        target_url_string = '',
+
                         
                         pathCheckLength = ( current_url_array.length > target_url_array.length ) ? current_url_array.length : target_url_array.length,
                         pathDifferenceIndex = -1;
@@ -252,13 +270,14 @@
                             break;
                         }
                     }
+
                     // Check if a path difference was found
                     if (pathDifferenceIndex > -1){
                         // Was the difference found in the last entry?
                         if ( pathDifferenceIndex === ( pathCheckLength - 1 ) ){
                             // Strip out hash tags to see if there really was a difference
-                            var current_url_string = ( current_url_page.indexOf('#') > -1 ) ? current_url_page.substring(0, current_url_page.indexOf('#')) : current_url_page;
-                            var target_url_string = ( target_url_page.indexOf('#') > -1 ) ? target_url_page.substring(0, target_url_page.indexOf('#')) : target_url_page;
+                            current_url_string = ( current_url_page.indexOf('#') > -1 ) ? current_url_page.substring(0, current_url_page.indexOf('#')) : current_url_page;
+                            target_url_string = ( target_url_page.indexOf('#') > -1 ) ? target_url_page.substring(0, target_url_page.indexOf('#')) : target_url_page;
 
                             // Compare the remainder of the string
                             if ( current_url_string === target_url_string ){
@@ -309,6 +328,7 @@
                 click: function( event, element ){
                     var
                         instance = this,
+                        data = instance._data;
                         $elem = jQuery(element),
                         target_url = $elem.attr('href'),
                         target_hash = $elem.prop('hash'),
@@ -332,8 +352,16 @@
                         }
                         // There is a hash
                         else {
-                           return;
-                           // @todo: add animation? callback?
+                            if ( instance.settings.scrollToHash ){
+                                var target_hash_position = jQuery(target_hash).offset().top;
+
+                                event.preventDefault();
+                                jQuery(instance._scroller).stop(true,true).animate({ scrollTop: target_hash_position }, instance.settings.smoothScrollDuration );
+                                history.pushState({ url: data.url.current, id: data.pop.id + 1 }, document.title, target_hash );
+                            }
+                            else {
+                                return;
+                            }
                         }
                     }
                     // The anchor is not a download link nor is it pointing to another frame
@@ -353,26 +381,30 @@
                     var
                         instance = this,
                         pop_id = instance._data.pop.id,
-                        state_id = history.state.id;
+                        state_id = history.state.id,
+                        is_same_page = instance._check.page.call( instance, instance._data.url.current, window.location.href );
 
-                    // Set our data and get loading
-                    instance._data.element = element;
-                    instance._data.url.previous = instance._data.url.current;
-                    instance._data.url.target = window.location.href;
-                    instance._data.pop.state = true;
+                    // Same page if it was a hash
+                    if ( !is_same_page ){
+                        // Set our data and get loading
+                        instance._data.element = element;
+                        instance._data.url.previous = instance._data.url.current;
+                        instance._data.url.target = window.location.href;
+                        instance._data.pop.state = true;
 
-                    // back button
-                    if ( pop_id > state_id ){
-                        instance._data.pop.direction = 'back';
+                        // back button
+                        if ( pop_id > state_id ){
+                            instance._data.pop.direction = 'back';
+                        }
+                        // forward button
+                        else if ( pop_id < state_id ){
+                            instance._data.pop.direction = 'forward';
+                        } 
+
+                        // Update
+                        instance._data.pop.id = history.state.id;
+                        instance._history.start_load.call( instance );                      
                     }
-                    // forward button
-                    else if ( pop_id < state_id ){
-                        instance._data.pop.direction = 'forward';
-                    } 
-                    // Update
-                    instance._data.pop.id = history.state.id;
-
-                    instance._history.start_load.call( instance );
                 },
                 manual: function(){
                     var 
@@ -527,8 +559,23 @@
                         sequenceInCallback = function(){
                             // Open up loading for another page
                             instance._data.ajax.loading = false;
-                            // Do the completeload event
-                            $(instance.element).trigger({ type: 'completeload.hijax' });
+
+                            if ( instance.settings.scrollToHash && window.location.hash !== '' ){
+                                jQuery(instance._scroller).stop(true,true).animate(
+                                    { 
+                                        scrollTop: jQuery(window.location.hash).offset().top
+                                    }, 
+                                    { 
+                                        duration: instance.settings.smoothScrollDuration,
+                                        complete: function(){
+                                            $(instance.element).trigger({ type: 'completeload.hijax' });
+                                        }
+                                    });
+                            }
+                            else {
+                                // Do the completeload event
+                                $(instance.element).trigger({ type: 'completeload.hijax' });                                
+                            }
                         },
                         data = null;
 
@@ -596,8 +643,9 @@
                         container = instance.settings.container,
                         response = instance._data.ajax.response,
                         html = jQuery.parseHTML( response ),
-                        content = jQuery(html).find(container).html(),
-                        $cont = jQuery(container);
+                        $cont = jQuery(container),
+                        $temp = jQuery( "<div>" ).append( html ).find( container ),
+                        content = $temp.html();
 
                     $cont.html(content);
                 },

@@ -92,6 +92,12 @@
 <td>false</td>
 <td>Whether to scroll the window to the top or not on an event that would cause loading. This overrides <code>smoothScroll</code> if it is false.</td>
 </tr>
+<tr>
+<td><code>scrollToHash</code></td>
+<td>boolean</td>
+<td>false</td>
+<td>Whether to scroll to hash changes automatically. Uses the same duration as <code>smoothScrollDuration</code></td>
+</tr>
 </tbody>
 </table>
 <p>You can use them like the example below: </p>
@@ -213,6 +219,13 @@
 </ul>
 <p>Note: iOS was tested in simulator.</p>
 <h4 id="version-history">Version History</h4>
+<h5 id="0-6-1">0.6.1</h5>
+<ul>
+<li>Added <code>scrollToHash</code></li>
+<li>Fixed multiple issues with popstate changes and loading on the same page</li>
+<li>Fixed issues with page loads when there was only a hash changed</li>
+<li>Added animated scrolling for hashes</li>
+</ul>
 <h5 id="0-6-0">0.6.0</h5>
 <p>A complete refactor of the plugin has been made to better organize, improve performance and make future updates easier. There are some additional checks, methods, and options.</p>
 <ul>

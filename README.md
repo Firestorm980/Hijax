@@ -59,6 +59,7 @@ These are the options currently available for Hijax.
 | `smoothScrollDuration` | number | 750 | Time in milliseconds that the scroll animation should take. |
 | `smoothScrollContainer` | string | '' | A selector of the element to use for scrolling. Overrides the browser's default scrolling element (html or body, depending on browser). |
 | `scrollToTop` | boolean | false | Whether to scroll the window to the top or not on an event that would cause loading. This overrides `smoothScroll` if it is false. |
+| `scrollToHash` | boolean | false | Whether to scroll to hash changes automatically. Uses the same duration as `smoothScrollDuration` | 
 
 You can use them like the example below: 
 
@@ -137,6 +138,12 @@ Tests for version 2 have not been completed, but it is assumed to work where Hij
 Note: iOS was tested in simulator.
 
 #### Version History ####
+
+##### 0.6.1
+- Added `scrollToHash`
+- Fixed multiple issues with popstate changes and loading on the same page
+- Fixed issues with page loads when there was only a hash changed
+- Added animated scrolling for hashes
 
 ##### 0.6.0
 A complete refactor of the plugin has been made to better organize, improve performance and make future updates easier. There are some additional checks, methods, and options.
