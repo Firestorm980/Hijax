@@ -14,7 +14,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.6.1
+ * @version: 0.6.2
  *
  * Licensed under the MIT License.
  */
@@ -349,6 +349,7 @@
                         // Don't do anything then
                         if ( !target_hash.length ){
                             event.preventDefault();
+                            $elem.trigger({ type: 'samelocation.hijax' });
                         }
                         // There is a hash
                         else {

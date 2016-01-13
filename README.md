@@ -104,6 +104,7 @@ Events have replaced the old loading callbacks. Those callbacks didn't pass any 
 | `afterload.hijax`    | Happens when the AJAX call has successfully completed. |
 | `completeload.hijax` | Happens after the `sequenceIn` callback has completed. |
 | `progress.hijax`     | Happens while the AJAX call is occuring. Useful for a possible loading bar. |
+| `samelocation.hijax` | A special event for clicked links. If the link href is determined to be the current page. |
 
 #### Methods
 There are a couple methods for use with Hijax that should help you out in very specific circumstances.
@@ -138,6 +139,9 @@ Tests for version 2 have not been completed, but it is assumed to work where Hij
 Note: iOS was tested in simulator.
 
 #### Version History ####
+
+##### 0.6.2
+- Added `samelocation.hijax` event handling
 
 ##### 0.6.1
 - Added `scrollToHash`
