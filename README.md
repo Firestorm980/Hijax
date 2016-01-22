@@ -130,15 +130,21 @@ This should get rid of most undesired behavior with links and UX.
 
 #### Tested On ####
 
-Tests for version 2 have not been completed, but it is assumed to work where Hijax used to:
+Hijax has been tested in these environments:
 
-- OSX (Chrome 39, Safari 8, Firefox 34)
-- iOS 8 (Safari)
-- Android 4.1 (Chrome 39)
+- Chrome 39+, Safari 8+, Firefox 34+ (OSX)
+- Safari 8+ (iOS 8+)*
+- Chrome 39+ (Android 4.1+)
+- IE10+, Edge 12+ (Windows 8+)
 
-Note: iOS was tested in simulator.
+Support is most likely as wide as shown here [http://caniuse.com/#search=history](http://caniuse.com/#search=history), but hasn't been tested with all the browsers that show support on that list. Browsers that are cross-platform likely work in any environment they've been made for.
+
+*Note: iOS was tested in simulator.
 
 #### Version History ####
+
+##### 0.6.3
+- Fix an issue with IE10 not recognizing same domain checks. This was blocking AJAX loading (but fell back to a working state).
 
 ##### 0.6.2
 - Added `samelocation.hijax` event handling

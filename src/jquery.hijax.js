@@ -14,7 +14,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.6.2
+ * @version: 0.6.3
  *
  * Licensed under the MIT License.
  */
@@ -301,7 +301,7 @@
                     var parser = document.createElement('a');
                     parser.href = url;
 
-                    return ( parser.host === location.host );
+                    return ( parser.hostname === location.hostname );
                 }
             },
             _event: {

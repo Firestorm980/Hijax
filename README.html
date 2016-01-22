@@ -215,14 +215,20 @@
 </ul>
 <p>This should get rid of most undesired behavior with links and UX.</p>
 <h4 id="tested-on">Tested On</h4>
-<p>Tests for version 2 have not been completed, but it is assumed to work where Hijax used to:</p>
+<p>Hijax has been tested in these environments:</p>
 <ul>
-<li>OSX (Chrome 39, Safari 8, Firefox 34)</li>
-<li>iOS 8 (Safari)</li>
-<li>Android 4.1 (Chrome 39)</li>
+<li>Chrome 39+, Safari 8+, Firefox 34+ (OSX)</li>
+<li>Safari 8+ (iOS 8+)*</li>
+<li>Chrome 39+ (Android 4.1+)</li>
+<li>IE10+, Edge 12+ (Windows 8+)</li>
 </ul>
-<p>Note: iOS was tested in simulator.</p>
+<p>Support is most likely as wide as shown here <a href="http://caniuse.com/#search=history">http://caniuse.com/#search=history</a>, but hasn&#39;t been tested with all the browsers that show support on that list. Browsers that are cross-platform likely work in any environment they&#39;ve been made for.</p>
+<p>*Note: iOS was tested in simulator.</p>
 <h4 id="version-history">Version History</h4>
+<h5 id="0-6-3">0.6.3</h5>
+<ul>
+<li>Fix an issue with IE10 not recognizing same domain checks. This was blocking AJAX loading (but fell back to a working state).</li>
+</ul>
 <h5 id="0-6-2">0.6.2</h5>
 <ul>
 <li>Added <code>samelocation.hijax</code> event handling</li>
