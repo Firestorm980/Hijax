@@ -1,10 +1,13 @@
 jQuery Hijax
 ============
 
-Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery's AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as [jQuery BBQ](https://github.com/cowboy/jquery-bbq) and [History.js](https://github.com/browserstate/history.js/). The difference between those plugins and this are that:
+Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery's AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as [jQuery BBQ](https://github.com/cowboy/jquery-bbq), [History.js](https://github.com/browserstate/history.js/) and [jQuery PJAX](https://github.com/defunkt/jquery-pjax). The difference between those plugins and this are that:
 
-- Hijax does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.
-- Hijax is progressive enhancement only. No backwards compatibility with browsers that don't support the History API.
+- Does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.
+- Is progressive enhancement only. No backwards compatibility with browsers that don't support the History API.
+- Does not require special headers.
+- Assumes that it should hook to your `<a>` tags.
+- Only targets a single container.
 
 The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect. It also provides easy access to animating between those states.
 
@@ -142,6 +145,10 @@ Support is most likely as wide as shown here [http://caniuse.com/#search=history
 *Note: iOS was tested in simulator.
 
 #### Version History ####
+
+##### 0.6.4
+- Fix a bug with links that are `<a href="#">` from causing a reload of the same page.
+- Fix a bug with links that have hashes on another page where the hash target doesn't exist. 
 
 ##### 0.6.3
 - Fix an issue with IE10 not recognizing same domain checks. This was blocking AJAX loading (but fell back to a working state).

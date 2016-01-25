@@ -14,7 +14,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.6.3
+ * @version: 0.6.4
  *
  * Licensed under the MIT License.
  */
@@ -256,10 +256,15 @@
                         target_url_array = target_url.split('/'),
                         target_url_page = target_url_array[ target_url_array.length - 1],
                         target_url_string = '',
-
                         
                         pathCheckLength = ( current_url_array.length > target_url_array.length ) ? current_url_array.length : target_url_array.length,
                         pathDifferenceIndex = -1;
+
+                    // Test for a plain hash link. 
+                    // If that's all there is in the array, it is likely this link is for JS or something that doesn't want a page reload.
+                    if ( target_url_array[0] === '#' ){
+                        return true;
+                    }
 
                     // Loop through and compare both paths. Stop if you find a difference.
                     for (var i = 0, l = pathCheckLength; i < l; i++ ){
@@ -558,17 +563,23 @@
                     var
                         instance = this,
                         sequenceInCallback = function(){
+                            var hash_target = window.location.hash;
                             // Open up loading for another page
                             instance._data.ajax.loading = false;
 
-                            if ( instance.settings.scrollToHash && window.location.hash !== '' ){
+                            // Check for the setting
+                            // Check to make sure the target isn't blank
+                            // Check to make sure the target actually exists
+                            if ( instance.settings.scrollToHash && hash_target !== '' && jQuery(hash_target).length ){
+                                // Scroll there
                                 jQuery(instance._scroller).stop(true,true).animate(
                                     { 
-                                        scrollTop: jQuery(window.location.hash).offset().top
+                                        scrollTop: jQuery(hash_target).offset().top
                                     }, 
                                     { 
                                         duration: instance.settings.smoothScrollDuration,
                                         complete: function(){
+                                             // Do the completeload event
                                             $(instance.element).trigger({ type: 'completeload.hijax' });
                                         }
                                     });

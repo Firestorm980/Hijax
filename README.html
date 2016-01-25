@@ -1,8 +1,11 @@
 <h1 id="jquery-hijax">jQuery Hijax</h1>
-<p>Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery&#39;s AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as <a href="https://github.com/cowboy/jquery-bbq">jQuery BBQ</a> and <a href="https://github.com/browserstate/history.js/">History.js</a>. The difference between those plugins and this are that:</p>
+<p>Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery&#39;s AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as <a href="https://github.com/cowboy/jquery-bbq">jQuery BBQ</a>, <a href="https://github.com/browserstate/history.js/">History.js</a> and <a href="https://github.com/defunkt/jquery-pjax">jQuery PJAX</a>. The difference between those plugins and this are that:</p>
 <ul>
-<li>Hijax does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.</li>
-<li>Hijax is progressive enhancement only. No backwards compatibility with browsers that don&#39;t support the History API.</li>
+<li>Does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.</li>
+<li>Is progressive enhancement only. No backwards compatibility with browsers that don&#39;t support the History API.</li>
+<li>Does not require special headers.</li>
+<li>Assumes that it should hook to your <code>&lt;a&gt;</code> tags.</li>
+<li>Only targets a single container.</li>
 </ul>
 <p>The goal of Hijax is to simply add the functionality needed in order to easily make a site load pages and switch out content via AJAX while keeping the browser functionality that users expect. It also provides easy access to animating between those states.</p>
 <h1 id="getting-started">Getting Started</h1>
@@ -225,6 +228,11 @@
 <p>Support is most likely as wide as shown here <a href="http://caniuse.com/#search=history">http://caniuse.com/#search=history</a>, but hasn&#39;t been tested with all the browsers that show support on that list. Browsers that are cross-platform likely work in any environment they&#39;ve been made for.</p>
 <p>*Note: iOS was tested in simulator.</p>
 <h4 id="version-history">Version History</h4>
+<h5 id="0-6-4">0.6.4</h5>
+<ul>
+<li>Fix a bug with links that are <code>&lt;a href=&quot;#&quot;&gt;</code> from causing a reload of the same page.</li>
+<li>Fix a bug with links that have hashes on another page where the hash target doesn&#39;t exist. </li>
+</ul>
 <h5 id="0-6-3">0.6.3</h5>
 <ul>
 <li>Fix an issue with IE10 not recognizing same domain checks. This was blocking AJAX loading (but fell back to a working state).</li>
