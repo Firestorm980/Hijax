@@ -103,11 +103,23 @@ Events have replaced the old loading callbacks. Those callbacks didn't pass any 
 
 | Event        | Description   |
 |--------------|--------|
-| `beforeload.hijax`   | Happens just before AJAX call. |
-| `afterload.hijax`    | Happens when the AJAX call has successfully completed. |
-| `completeload.hijax` | Happens after the `sequenceIn` callback has completed. |
-| `progress.hijax`     | Happens while the AJAX call is occuring. Useful for a possible loading bar. |
+| `beforeload.hijax`   | Occurs just before AJAX call. |
+| `afterload.hijax`    | When the AJAX call has successfully completed. |
+| `completeload.hijax` | After the `sequenceIn` callback has completed. |
+| `progress.hijax`     | While the AJAX call is occuring. Useful for a possible loading bar. |
 | `samelocation.hijax` | A special event for clicked links. If the link href is determined to be the current page. |
+| `errorload.hijax`    | When the AJAX call fails. This should usually be because the page doesn't exist. |
+
+
+##### Additional information about Events
+
+
+###### `afterload.hijax`
+This event will also return the response that was recieved from the AJAX call. You can use this to your advantage if you need to parse the response for additional data. This can be especially helpful for things like switching classes on elements outside the content area.
+
+###### `errorload.hijax`
+This event will also return some data to help you determine what you should do in the case of an error. The data returned in the event object is `status` and `statusText`. This event does not handle errors for you. There is no default behavior with the plugin for when a resource doesn't load for whatever reason. Therefore, it is highly recommended to use this event! It is up to the developer to figure out a best course of action (such as alerting the user, trying to make the request again, leading the user to an error page, etc.).
+
 
 #### Methods
 There are a couple methods for use with Hijax that should help you out in very specific circumstances.

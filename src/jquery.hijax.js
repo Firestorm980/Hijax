@@ -14,7 +14,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.6.4
+ * @version: 0.6.5
  *
  * Licensed under the MIT License.
  */
@@ -543,20 +543,36 @@
                             return xhr;
                         },
                     })
-                    .done(function( response ) {
+                    .done(function( response, textStatus, jqXHR ) {
                         // Save the response
                         // We'll use it later
                         instance._data.ajax.response = response;
                         instance._data.ajax.success = true;
                         // Do afterload event
-                        $(instance.element).trigger({ type: 'afterload.hijax', response: response });
+                        jQuery(instance.element).trigger({ type: 'afterload.hijax', response: response });
                         // Proceed to do the end load
                         instance._history.end_load.call( instance ); 
                     })
-                    .fail(function() {
+                    .fail(function( jqXHR, textStatus, errorThrown ) {
+                        var 
+                            status = jqXHR.status, 
+                            statusText = jqXHR.statusText,
+                            url = instance._data.url.previous,
+                            id = instance._data.pop.id,
+                            history_url = (navigator.userAgent.match(/iPhone|iPad|iPod/i)) ? url+'#' : url; // Fix for iOS;
+
+                        // The request didn't succeed
                         instance._data.ajax.success = false;
-                    })
-                    .always(function() {
+
+                        // This is if we got to the 404 page via the back button
+                        // It shouldn't be possible to get to it via the forward button (as you would have to click a link to get there first, which should fail)
+                        if ( instance._data.pop.state ){
+                            // Replace the "bad" entry with the last good page
+                            // This will cause the last good entry to occur twice when going forwards
+                            history.replaceState({ url: url, id: id  }, document.title, history_url );
+                        }
+                        // Trigger our custom error handling event so people can decide what to do.
+                        jQuery(instance.element).trigger({ type: 'errorload.hijax', status: status, statusText: statusText });
                     });
                 },
                 end_load: function(){

@@ -163,26 +163,35 @@
 <tbody>
 <tr>
 <td><code>beforeload.hijax</code></td>
-<td>Happens just before AJAX call.</td>
+<td>Occurs just before AJAX call.</td>
 </tr>
 <tr>
 <td><code>afterload.hijax</code></td>
-<td>Happens when the AJAX call has successfully completed.</td>
+<td>When the AJAX call has successfully completed.</td>
 </tr>
 <tr>
 <td><code>completeload.hijax</code></td>
-<td>Happens after the <code>sequenceIn</code> callback has completed.</td>
+<td>After the <code>sequenceIn</code> callback has completed.</td>
 </tr>
 <tr>
 <td><code>progress.hijax</code></td>
-<td>Happens while the AJAX call is occuring. Useful for a possible loading bar.</td>
+<td>While the AJAX call is occuring. Useful for a possible loading bar.</td>
 </tr>
 <tr>
 <td><code>samelocation.hijax</code></td>
 <td>A special event for clicked links. If the link href is determined to be the current page.</td>
 </tr>
+<tr>
+<td><code>errorload.hijax</code></td>
+<td>When the AJAX call fails. This should usually be because the page doesn&#39;t exist.</td>
+</tr>
 </tbody>
 </table>
+<h5 id="additional-information-about-events">Additional information about Events</h5>
+<h6 id="-afterload-hijax-"><code>afterload.hijax</code></h6>
+<p>This event will also return the response that was recieved from the AJAX call. You can use this to your advantage if you need to parse the response for additional data. This can be especially helpful for things like switching classes on elements outside the content area.</p>
+<h6 id="-errorload-hijax-"><code>errorload.hijax</code></h6>
+<p>This event will also return some data to help you determine what you should do in the case of an error. The data returned in the event object is <code>status</code> and <code>statusText</code>. This event does not handle errors for you. There is no default behavior with the plugin for when a resource doesn&#39;t load for whatever reason. Therefore, it is highly recommended to use this event! It is up to the developer to figure out a best course of action (such as alerting the user, trying to make the request again, leading the user to an error page, etc.).</p>
 <h4 id="methods">Methods</h4>
 <p>There are a couple methods for use with Hijax that should help you out in very specific circumstances.</p>
 <table>
