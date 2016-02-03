@@ -1,15 +1,3 @@
-(function ($, root, undefined) {
-    
-    $(function () {
-        
-        'use strict';
-        
-        // DOM ready, take it away
-        
-    });
-    
-})(jQuery, this);
-
 /**
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
