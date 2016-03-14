@@ -63,6 +63,7 @@ These are the options currently available for Hijax.
 | `smoothScrollContainer` | string | '' | A selector of the element to use for scrolling. Overrides the browser's default scrolling element (html or body, depending on browser). |
 | `scrollToTop` | boolean | false | Whether to scroll the window to the top or not on an event that would cause loading. This overrides `smoothScroll` if it is false. |
 | `scrollToHash` | boolean | false | Whether to scroll to hash changes automatically. Uses the same duration as `smoothScrollDuration` | 
+| `googleAnalytics` | string | 'ga' | Use a custom Google Analytics function. Some plugins change the default function 'ga', so the page view send no longer works. This way, you can map it to where the function is located. |
 
 You can use them like the example below: 
 
@@ -157,6 +158,10 @@ Support is most likely as wide as shown here [http://caniuse.com/#search=history
 *Note: iOS was tested in simulator.
 
 #### Version History ####
+
+##### 0.6.6
+- Fix analytics to work with more than just 'ga'.
+- Added option to specify a custom Google Analytics function name.
 
 ##### 0.6.4
 - Fix a bug with links that are `<a href="#">` from causing a reload of the same page.

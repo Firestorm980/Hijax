@@ -101,6 +101,12 @@
 <td>false</td>
 <td>Whether to scroll to hash changes automatically. Uses the same duration as <code>smoothScrollDuration</code></td>
 </tr>
+<tr>
+<td><code>googleAnalytics</code></td>
+<td>string</td>
+<td>&#39;ga&#39;</td>
+<td>Use a custom Google Analytics function. Some plugins change the default function &#39;ga&#39;, so the page view send no longer works. This way, you can map it to where the function is located.</td>
+</tr>
 </tbody>
 </table>
 <p>You can use them like the example below: </p>
@@ -237,6 +243,11 @@
 <p>Support is most likely as wide as shown here <a href="http://caniuse.com/#search=history">http://caniuse.com/#search=history</a>, but hasn&#39;t been tested with all the browsers that show support on that list. Browsers that are cross-platform likely work in any environment they&#39;ve been made for.</p>
 <p>*Note: iOS was tested in simulator.</p>
 <h4 id="version-history">Version History</h4>
+<h5 id="0-6-6">0.6.6</h5>
+<ul>
+<li>Fix analytics to work with more than just &#39;ga&#39;.</li>
+<li>Added option to specify a custom Google Analytics function name.</li>
+</ul>
 <h5 id="0-6-4">0.6.4</h5>
 <ul>
 <li>Fix a bug with links that are <code>&lt;a href=&quot;#&quot;&gt;</code> from causing a reload of the same page.</li>

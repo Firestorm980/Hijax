@@ -2,7 +2,7 @@
  * jQuery Hijax Plugin
  * @author: Jon Christensen (Firestorm980)
  * @github: https://github.com/Firestorm980/Hijax
- * @version: 0.6.5
+ * @version: 0.6.6
  *
  * Licensed under the MIT License.
  */
@@ -33,12 +33,17 @@
             // Could be useful if you wanted to control a similar smooth scroll animation with another library
             scrollToTop: false,
 
+            // Scroll to a hash target
             scrollToHash: false,
 
             // Animate the body back to the top of the content
             smoothScroll: false,
             smoothScrollDuration: 1000,
             smoothScrollContainer: '',
+
+            // Override the Google Analytics default function
+            // Useful if you or a plugin changes it
+            googleAnalytics: 'ga',
 
             // Animation in
             sequenceIn: function( callback, data ){
@@ -643,12 +648,15 @@
                     instance._data.pop.id = id + 1;
                 },
                 analytics: function(){
-                    var ga = ga || undefined; // Detect Google Analytics
+                    var 
+                        instance = this,
+                        googleAnalytics = instance.settings.googleAnalytics,
+                        ga = window[googleAnalytics] || undefined; // Detect Google Analytics
 
                     // Google Analytics
                     if (ga !== undefined){
                         // Send a pageview to Google since we loaded it via AJAX
-                        ga('send', 'pageview');
+                        ga.call(this, 'send', 'pageview', { 'page': location.pathname, 'title': document.title });
                     }
                 }
             },
