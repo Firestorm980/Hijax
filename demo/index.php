@@ -12,7 +12,7 @@
         	<div id="siteContent">
         		<div class="page-meta">
         			<span id="metaClasses" class="meta-classes">home front-page</span>
-        			<span id="metaTitle" class="meta-title">MoCo AJAX | Home</span>
+        			<span id="metaTitle" class="meta-title">HIJAX | Home</span>
                     <span id="metaTitle" class="meta-description"></span>
         		</div>
         		<div class="page-content">

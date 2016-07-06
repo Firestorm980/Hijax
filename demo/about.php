@@ -12,16 +12,16 @@
         	<div id="siteContent">
         		<div class="page-meta">
                     <span id="metaClasses" class="meta-classes">page page-about</span>
-                    <span id="metaTitle" class="meta-title">MoCo AJAX | About</span>
+                    <span id="metaTitle" class="meta-title">HIJAX | About</span>
                     <span id="metaTitle" class="meta-description"></span>
         		</div>
         		<div class="page-content">
 
         			<p>This is where actual page content is. This is the about page.</p>
                     <ul>
-                        <li><a href="/people/">People Index</a></li>
-                        <li><a href="/people/person1.php">Troy McClure</a></li>
-                        <li><a href="/people/person2.php">Happy Gilmore</a></li>
+                        <li><a href="/demo/people/">People Index</a></li>
+                        <li><a href="/demo/people/person1.php">Troy McClure</a></li>
+                        <li><a href="/demo/people/person2.php">Happy Gilmore</a></li>
                     </ul>
 
         		</div>

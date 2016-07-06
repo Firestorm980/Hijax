@@ -12,7 +12,7 @@
         	<div id="siteContent">
         		<div class="page-meta">
                     <span id="metaClasses" class="meta-classes">page page-person</span>
-                    <span id="metaTitle" class="meta-title">MoCo AJAX | Troy McClure</span>
+                    <span id="metaTitle" class="meta-title">HIJAX | Troy McClure</span>
                     <span id="metaTitle" class="meta-description"></span>
         		</div>
         		<div class="page-content">

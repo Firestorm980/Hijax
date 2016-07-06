@@ -12,7 +12,7 @@
         	<div id="siteContent">
         		<div class="page-meta">
                     <span id="metaClasses" class="meta-classes">page page-services</span>
-                    <span id="metaTitle" class="meta-title">MoCo AJAX | Services</span>
+                    <span id="metaTitle" class="meta-title">HIJAX | Services</span>
                     <span id="metaTitle" class="meta-description"></span>
         		</div>
         		<div class="page-content">
@@ -20,9 +20,9 @@
         			<p>This is where actual page content is. This is the services page.</p>
 
                     <ul>
-                        <li><a href="/assets/other/2-16-14-message.mp3">MP3 Test</a></li>
-                        <li><a href="/assets/other/AudioPodcast.jpg">JPG Test</a></li>
-                        <li><a href="/assets/other/AudioPodcast-big.png">PNG Test</a></li>
+                        <li><a data-hijax="false" href="/demo/assets/other/2-16-14-message.mp3">MP3 Test</a></li>
+                        <li><a data-hijax="false" href="/demo/assets/other/AudioPodcast.jpg">JPG Test</a></li>
+                        <li><a data-hijax="false" href="/demo/assets/other/AudioPodcast-big.png">PNG Test</a></li>
                     </ul>
         		</div>
         	</div>

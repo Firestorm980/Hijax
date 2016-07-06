@@ -30,6 +30,6 @@
 		<meta property="fb:admins" content="Facebook numeric ID" />
 */ ?>
 
-        <link rel="stylesheet" href="/assets/css/normalize.css">
-        <link rel="stylesheet" href="/assets/css/styles.css">
+        <link rel="stylesheet" href="/demo/assets/css/normalize.css">
+        <link rel="stylesheet" href="/demo/assets/css/styles.css">
     </head>

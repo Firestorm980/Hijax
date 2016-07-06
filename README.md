@@ -1,6 +1,12 @@
 jQuery Hijax
 ============
 
+# A Note Before Starting
+
+This project is only maintained by me, and not very actively since it is only a side project. It should mostly work out of the box. If you do find a problem, make sure to open an issue and maybe even make a pull request that fixes it. If you choose to use it in production, use at your own risk.
+
+# Introduction
+
 Hijax is a jQuery dependant plugin that uses the JavaScript History API in HTML5 and jQuery's AJAX method to dynamically replace content when new pages are loaded. The plugin works similarly to others such as [jQuery BBQ](https://github.com/cowboy/jquery-bbq), [History.js](https://github.com/browserstate/history.js/) and [jQuery PJAX](https://github.com/defunkt/jquery-pjax). The difference between those plugins and this are that:
 
 - Does not to alter the URL for its own use. No query strings, no hashtags or fragments are added.
@@ -68,7 +74,7 @@ These are the options currently available for Hijax.
 You can use them like the example below: 
 
 ```Javascript
-var Hijax = $.Hijax({
+jQuery(document).hijax({
     element: '#my-element',
     exclude: '.link-exclude'
     ...
@@ -81,7 +87,7 @@ var Hijax = $.Hijax({
 By default, these functions simply proceed to the next phase of loading. However, they are supplied for use that will allow a developer to have multiple functions activate and finish before the actual AJAX load occurs. This is mainly so that you can add your own custom animations to have smooth transitions between pages (but it could be used/abused for other purposes). An example of this is below:
 
 ```Javascript
-var Hijax = $.Hijax({
+jQuery(document).hijax({
 	sequenceOut: function(callback, data){
 		$('#element').animate({ opacity: 0 }, { duration: 1000, complete: callback });
 	},
@@ -142,7 +148,7 @@ Hijax is meant to take over links in your page by default. It targets all the li
 - It is an external link (By comparing the host/domain of the current URL and the target, should do default behavior)
 - It is determined to be the same as the current page (in which case loading is redundant)
 
-This should get rid of most undesired behavior with links and UX.
+This should get rid of most undesired behavior with links and UX. Note though that it does miss certain links that could be on your site pointing to assets such as media files. In such cases you should use the selector specified in the `exclude` option.
 
 #### Tested On ####
 
