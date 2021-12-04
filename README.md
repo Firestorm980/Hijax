@@ -1,9 +1,9 @@
 jQuery Hijax
 ============
 
-# A Note Before Starting
+# :warning: A Note Before Starting
 
-This project is only maintained by me, and not very actively since it is only a side project. It should mostly work out of the box. If you do find a problem, make sure to open an issue and maybe even make a pull request that fixes it. If you choose to use it in production, use at your own risk.
+At this point, this project is deprecated. Other, better options are available that don't need jQuery. If you choose to use it in production, use at your own risk.
 
 # Introduction
 
